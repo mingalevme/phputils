@@ -52,21 +52,28 @@ class HTTP
             if ($value === NULL) {
                 unset($parse_url[$key]);
             } elseif ($key === strtoupper($key) || isset($parse_url[$key]) == FALSE) {
+                
                 $parse_url[strtolower($key)] = $parts[$key];
             } elseif ($key == 'path') {
                 $parse_url['path'] = rtrim(str_replace(basename($parse_url['path']), '', $parse_url['path']), '/') . '/' . ltrim($parts['path'], '/');
             } elseif ($key == 'query') {
+                
                 $baseQuery = array();
                 parse_str($parse_url['query'], $baseQuery);
-                $query = array();
-                parse_str($parts['query'], $query);
-                $query = array_merge($baseQuery, $query);
-                $parse_url['query'] = http_build_query($query);
+                
+                if (is_array($value)) {
+                    $query = $value;
+                } else {
+                    $query = array();
+                    parse_str($value, $query);
+                }
+                
+                $parse_url['query'] = array_merge($baseQuery, $query);
             }
         }
         
-        if (isset($parse_url['scheme']) == FALSE) {
-            $parse_url['scheme'] = 'http';
+        if (isset($parse_url['query']) && is_array($parse_url['query'])) {
+            $parse_url['query'] = http_build_query($parse_url['query']);
         }
 
         $new_url = $parse_url;
