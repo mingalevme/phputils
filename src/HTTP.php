@@ -10,12 +10,15 @@ class HTTP
     const QUERY     = 'query';
     const FRAGMENT  = 'fragment';
     
-    // Build an URL
-    // The parts of the second URL will be merged into the first according to the flags argument. 
-    // 
-    // @param	mixed	(Part(s) of) an URL in form of a string or associative array like parse_url() returns
-    // @param	mixed	Same as the first argument
-    // @param	array	If set, it will be filled with the parts of the composed url like parse_url() would return 
+    /**
+     * Build an URL
+     * 
+     * The parts of the second URL will be merged into the first according to the flags argument. 
+     * @param string $url The URL to parse
+     * @param array $parts [optional] Associative array like parse_url() returns
+     * @param array &$new_url [optional] If set, it will be filled with the parts of the composed url like parse_url() would return
+     * @return string The new URL string
+     */
     public static function buildUrl($url, $parts=array(), &$new_url=false)
     {
         $url = trim($url);
@@ -28,15 +31,12 @@ class HTTP
             'q' => 'query',
             'f' => 'fragment'
         );
-
-        // Parse the original URL
-        $parse_url = parse_url($url);
         
         // Resolve aliases
         foreach ($parts as $k => $value) {
             if (isset($aliases[strtolower($k)])) {
                 $key = $aliases[strtolower($k)];
-                if ($k == strtoupper($k)) {
+                if ($k === strtoupper($k)) {
                     $parts[strtoupper($key)] = $value;
                 } else {
                     $parts[$key] = $value;
@@ -44,16 +44,24 @@ class HTTP
                 unset($parts[$k]);
             }
         }
+
+        // Parse the original URL
+        $parse_url = parse_url($url);
         
         foreach ($parts as $key => $value) {
             if ($value === NULL) {
                 unset($parse_url[$key]);
-            } elseif ($key == strtoupper($key) || isset($parse_url[$key]) == FALSE) {
+            } elseif ($key === strtoupper($key) || isset($parse_url[$key]) == FALSE) {
                 $parse_url[strtolower($key)] = $parts[$key];
             } elseif ($key == 'path') {
                 $parse_url['path'] = rtrim(str_replace(basename($parse_url['path']), '', $parse_url['path']), '/') . '/' . ltrim($parts['path'], '/');
             } elseif ($key == 'query') {
-                $parse_url['query'] .= '&' . $parts['query'];
+                $baseQuery = array();
+                parse_str($parse_url['query'], $baseQuery);
+                $query = array();
+                parse_str($parts['query'], $query);
+                $query = array_merge($baseQuery, $query);
+                $parse_url['query'] = http_build_query($query);
             }
         }
         
