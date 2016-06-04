@@ -86,4 +86,47 @@ class URL
             .((isset($parse_url['fragment'])) ? '#' . $parse_url['fragment'] : '')
             ;
     }
+    
+    /**
+     * Set (if not specified) scheme and host to $url based on $baseUrl
+     * 
+     * @param string $url
+     * @param string $baseUrl
+     * @return type Description
+     */
+    public static function absolutizeUrl(string $url, string $baseUrl)
+    {
+        $components = parse_url($baseUrl);
+        
+        if (isset($components[self::SCHEME]) === false || isset($components[self::HOST]) === false) {
+            throw new Exception("Malformed baseUrl: {$baseUrl}");
+        }
+        
+        return static::build($url, [
+            's' => $components[self::SCHEME],
+            'h' => $components[self::HOST],
+        ]);
+    }
+    
+    /**
+     * Check if url is absolute (based on host component)
+     * 
+     * @param string $url
+     * @return bool
+     */
+    public static function isAbsolute($url)
+    {
+        return parse_url($url, PHP_URL_HOST);
+    }
+    
+    /**
+     * Check if url is related (based on host component)
+     * 
+     * @param string $url
+     * @return bool
+     */
+    public static function isRelated($url)
+    {
+        return !self::isAbsolute($url);
+    }
 }

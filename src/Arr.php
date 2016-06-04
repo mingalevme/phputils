@@ -18,6 +18,17 @@ class Arr
     }
 
     /**
+     * Remove from any []-, null-, ''-values
+     * 
+     * @param array $arr
+     * @return null
+     */
+    public static function simplify(array &$arr)
+    {
+        static::filter($arr, [[], null, '']);
+    }
+
+    /**
      * Recursively delete unwanted (default: null) values from array
      * 
      * @param array $arr
