@@ -167,14 +167,16 @@ class URL
     }
     
     /**
-     * Check if url is absolute (based on host component)
+     * Check if url is absolute (based on scheme and host components)
      * 
      * @param string $url
      * @return bool
      */
     public static function isAbsolute($url)
     {
-        return parse_url($url, PHP_URL_HOST);
+        $components = self::parse($url);
+        
+        return isset($components[self::SCHEME]) && isset($components[self::HOST]);
     }
     
     /**
