@@ -2,12 +2,37 @@
 
 class URL
 {
-    const USER      = 'user';
     const SCHEME    = 'scheme';
     const HOST      = 'host';
+    const PORT      = 'port';
+    const USER      = 'user';
+    const PASSWORD  = 'password';
+    const PATH      = 'path';
     const QUERY     = 'query';
     const FRAGMENT  = 'fragment';
     
+    /*static protected $mapping = [
+        \PHP_URL_SCHEME => 'scheme',
+        \PHP_URL_HOST => 'host',
+        \PHP_URL_PORT => 'port',
+        \PHP_URL_USER => 'user',
+        \PHP_URL_PASS => 'password',
+        \PHP_URL_PATH => 'path',
+        \PHP_URL_QUERY => 'query',
+        \PHP_URL_FRAGMENT => 'fragment',
+    ];*/
+    
+    static protected $mapping = [
+        self::SCHEME => \PHP_URL_SCHEME,
+        self::HOST => \PHP_URL_HOST,
+        self::PORT => \PHP_URL_PORT,
+        self::USER => \PHP_URL_USER,
+        self::PASSWORD => \PHP_URL_PASS,
+        self::PATH => \PHP_URL_PATH,
+        self::QUERY => \PHP_URL_QUERY,
+        self::FRAGMENT => \PHP_URL_FRAGMENT,
+    ];
+
     /**
      * Build an URL
      * 
@@ -17,18 +42,18 @@ class URL
      * @param array &$new_url [optional] If set, it will be filled with the parts of the composed url like parse_url() would return
      * @return string The new URL string
      */
-    public static function build($url, $parts=array(), &$new_url=false)
+    public static function build($url, $parts=[], &$new_url=false)
     {
         $url = trim($url);
 
         // Aliases
-        $aliases = array(
+        $aliases = [
             'u' => 'user',
             's' => 'scheme',
             'h' => 'host',
             'q' => 'query',
             'f' => 'fragment'
-        );
+        ];
         
         // Resolve aliases
         foreach ($parts as $k => $value) {
@@ -56,7 +81,7 @@ class URL
                 $parse_url['path'] = rtrim(str_replace(basename($parse_url['path']), '', $parse_url['path']), '/') . '/' . ltrim($parts['path'], '/');
             } elseif ($key == 'query') {
                 
-                $baseQuery = array();
+                $baseQuery = [];
                 parse_str($parse_url['query'], $baseQuery);
                 
                 if (is_array($value)) {
@@ -85,6 +110,39 @@ class URL
             .((isset($parse_url['query'])) ? '?' . $parse_url['query'] : '')
             .((isset($parse_url['fragment'])) ? '#' . $parse_url['fragment'] : '')
             ;
+    }
+    
+    /**
+     * Almost the same as parse_url, except $component is expected local consts
+     * 
+     * @param string $url The URL to parse. Invalid characters are replaced by _.
+     * @param int $component Optional. Specify one of
+     * self::SCHEME,
+     * self::HOST,
+     * self::PORT,
+     * self::USER,
+     * self::PASSWORD,
+     * self::PATH,
+     * self::QUERY,
+     * self::FRAGMENT
+     * to retrieve just a specific URL component as a string (except
+     * when self::PORT is given, in which case the return value will be an integer).
+     * @throws \Exception If $component is unknown.
+     * @return array|string|int|bool If the component parameter is omitted,
+     * an associative array is returned. At least one element will be present
+     * within the array. If the component parameter is specified, self::parse()
+     * returns a string (or an integer, in the case of self::PORT) instead of
+     * an array. If the requested component doesn't exist within the given URL,
+     * NULL will be returned.
+     * 
+     */
+    public static function parse($url, string $component = null)
+    {
+        if ($component && isset(self::$mapping[$component]) === false) {
+            throw new \Exception("Unknown component: {$component}");
+        }
+        
+        return \parse_url($url, $component ? self::$mapping[$component] : -1);
     }
     
     /**
