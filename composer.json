@@ -1,6 +1,6 @@
 {
     "name": "mingalevme/utils",
-    "description": "Some helpers to make the life easier",
+    "description": "Some helpers to make your life easier",
     "license": "MIT",
     "keywords": ["http_build_url"],
     "authors": [
@@ -9,7 +9,9 @@
             "email": "mingalevme@gmail.com"
         }
     ],
-    "require": {},
+    "require": {
+        "illuminate/support": "*"
+    },
     "require-dev": {
         "phpunit/phpunit": "4.0.*"
     },

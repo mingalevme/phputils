@@ -1,65 +1,42 @@
-<?php namespace Mingalevme\Utils;
+<?php
 
-class Arr
+namespace Mingalevme\Utils;
+
+class Arr extends \Illuminate\Support\Arr
 {
     /**
-     * Rename array key
+     * Recursivly remove all falsy values from array
      * 
-     * @param $a
-     * @param $old
-     * @param $new
-     * @return mixed
+     * @param array $arr
+     * @return array
      */
-    public static function rename(&$a, $old, $new)
+    public static function compact(array $arr)
     {
-        $a[$new] = $a[$old];
-        unset ($a[$old]);
-        return $old;
+        return static::filter($arr, function($value){
+            return (bool) $value;
+        });
     }
 
     /**
-     * Remove from any []-, null-, ''-values
+     * Recursively filters elements of an array using a callback function
      * 
      * @param array $arr
+     * @param callable $callback
      * @return null
      */
-    public static function simplify(array &$arr)
+    public static function filter(array $arr, callable $callback)
     {
-        static::filter($arr, [[], null, '']);
-    }
-
-    /**
-     * Recursively delete unwanted (default: null) values from array
-     * 
-     * @param array $arr
-     * @param mixed $values
-     * @return null
-     */
-    public static function filter(array &$arr, $values=NULL)
-    {
-        if ($values === NULL || is_array($values) === FALSE) {
-            $values = [$values];
+        foreach ($arr as $key => $value) {
+            if (is_array($value) && count($value) > 0) {
+                $arr[$key] = static::filter($value, $callback);
+            }
+            
+            if ((bool) call_user_func($callback, $arr[$key], $key) === false) {
+                unset($arr[$key]);
+            }
         }
         
-        foreach ($arr as $k => &$v) {
-            if (is_array($v)) {
-                static::filter($v, $values);
-            }
-            if (in_array($v, $values, true)) {
-                unset($arr[$k]);
-            }
-        }
-    }
-
-    /**
-     * Returns the first element of array
-     * 
-     * @param $a
-     * @return mixed
-     */
-    public static function first($a)
-    {
-        return static::index($a, 0);
+        return count($arr) ? $arr : null;
     }
 
     /**
@@ -94,19 +71,6 @@ class Arr
     }
 
     /**
-     * Safely gets array element by key
-     * 
-     * @param array $arr
-     * @param $key
-     * @param null $default
-     * @return mixed
-     */
-    public static function get(array $arr, $key, $default=null)
-    {
-        return static::index($arr, $key) ?: $default;
-    }
-
-    /**
      * Makes the array where keys is the subarray values by $key and values is the subarrays.
      * If $valueAttr is specified, the result array values 
      * 
@@ -135,19 +99,5 @@ class Arr
         }
 
         return $result;
-    }
-    
-    /**
-     * Returns array element and deletes it from array
-     * 
-     * @param array $arr
-     * @param int|string $index
-     * @return mixed
-     */
-    public static function rob(&$arr, $index)
-    {
-        $v = $arr[$index];
-        unset($arr[$index]);
-        return $v;
     }
 }
