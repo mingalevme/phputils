@@ -189,4 +189,15 @@ class URL
     {
         return !self::isAbsolute($url);
     }
+    
+    public static function isLocal($url)
+    {
+        $components = self::parse($url);
+        
+        if (isset($components[self::SCHEME]) === false || $components[self::SCHEME] === 'file') {
+            return true;
+        }
+        
+        return false;
+    }
 }
