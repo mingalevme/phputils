@@ -100,4 +100,40 @@ class Arr extends \Illuminate\Support\Arr
 
         return $result;
     }
+    
+    /**
+     * @param array $array
+     * @param $keys
+     * @return array
+     */
+    public static function unset(array $array, $keys)
+    {
+        if (!is_array($keys)) {
+            $keys = [$keys];
+        }
+
+        foreach ($keys as $key) {
+            if (array_key_exists($key, $array)) {
+                unset($array[$key]);
+            }
+        }
+
+        return $array;
+    }
+
+    /**
+     * @param array $array
+     * @param array $keys
+     * @return array
+     */
+    public static function unsetExcept(array $array, array $keys)
+    {
+        foreach ($array as $key => $value) {
+            if (!in_array($key, $keys)) {
+                unset($array[$key]);
+            }
+        }
+
+        return $array;
+    }
 }
