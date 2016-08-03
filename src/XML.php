@@ -91,4 +91,23 @@ class XML extends \SimpleXMLElement
     {
         return preg_replace('/>[\n\s\r]+?</', '><', $this->asXML());
     }
+    
+    /**
+     * Get element child as string
+     *
+     * @param \SimpleXMLElement $el
+     * @return string
+     */
+    public function getValue(string $child = null)
+    {
+        if (isset($this)) {
+            if ($child && isset($this->{$child})) {
+                return trim($this->{$child});
+            } else {
+                return trim($this);
+            }
+        }
+
+        return null;
+    }
 }
