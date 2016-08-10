@@ -14,10 +14,16 @@ class Filesystem
             static::mkdir(dirname($pathname), $mode, $user, $group, $context);
         }
 
-        if ($context) {
-            mkdir($pathname, $mode, false, $context);
-        } else {
-            mkdir($pathname, $mode);
+        try {
+            if ($context) {
+                mkdir($pathname, $mode, false, $context);
+            } else {
+                mkdir($pathname, $mode);
+            }
+        } catch (\ErrorException $e) {
+            if (strpos(strtolower($e->getMessage()), 'exists') === false) {
+                throw $e;
+            }
         }
 
         if ($user) {

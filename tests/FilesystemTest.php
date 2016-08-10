@@ -28,7 +28,7 @@ class FilesystemTest extends PHPUnit_Framework_TestCase
             $pathname = sys_get_temp_dir() . $DR . implode($DR, $dirs);
             
             Filesystem::mkdir($pathname, 0775);
-            $this->assertTrue(is_dir($pathname), 'Directory not found');
+            $this->assertTrue(is_dir($pathname), 'Directory has not been created');
             
             while ($pathname !== sys_get_temp_dir()) {
                 $perms = substr(sprintf('%o', fileperms($pathname)), -4);
