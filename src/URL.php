@@ -96,7 +96,7 @@ class URL
         }
         
         if (isset($parse_url['query']) && is_array($parse_url['query'])) {
-            $parse_url['query'] = http_build_query($parse_url['query']);
+            $parse_url['query'] = static::buildQueryString($parse_url['query']);
         }
 
         $new_url = $parse_url;
@@ -146,6 +146,63 @@ class URL
     }
     
     /**
+     * (PHP 5)<br/>
+     * Generate URL-encoded query string
+     * @link http://php.net/manual/en/function.http-build-query.php
+     * @param mixed $query_data <p>
+     * May be an array or object containing properties.
+     * </p>
+     * <p>
+     * If <i>query_data</i> is an array, it may be a simple
+     * one-dimensional structure, or an array of arrays (which in
+     * turn may contain other arrays).
+     * </p>
+     * <p>
+     * If <i>query_data</i> is an object, then only public
+     * properties will be incorporated into the result.
+     * </p>
+     * @param string $numeric_prefix [optional] <p>
+     * If numeric indices are used in the base array and this parameter is
+     * provided, it will be prepended to the numeric index for elements in
+     * the base array only.
+     * </p>
+     * <p>
+     * This is meant to allow for legal variable names when the data is
+     * decoded by PHP or another CGI application later on.
+     * </p>
+     * @param string $arg_separator [optional] <p>
+     * arg_separator.output
+     * is used to separate arguments, unless this parameter is specified,
+     * and is then used.
+     * </p>
+     * @param int $enc_type [optional] <p>
+     * By default, <b>PHP_QUERY_RFC1738</b>.
+     * </p>
+     * <p>
+     * If <i>enc_type</i> is
+     * <b>PHP_QUERY_RFC1738</b>, then encoding is performed per
+     * RFC 1738 and the
+     * application/x-www-form-urlencoded media type, which
+     * implies that spaces are encoded as plus (+) signs.
+     * </p>
+     * <p>
+     * If <i>enc_type</i> is
+     * <b>PHP_QUERY_RFC3986</b>, then encoding is performed
+     * according to RFC 3986, and
+     * spaces will be percent encoded (%20).
+     * </p>
+     * @return string a URL-encoded string.
+     */
+    public static function buildQueryString(array $params, $prefix = null, $separator = '&', $enctype = null)
+    {
+        if ($enctype) {
+            return http_build_query($params, $prefix, $separator, $enctype);
+        } else {
+            return http_build_query($params, $prefix, $separator);
+        }
+    }
+
+        /**
      * Set (if not specified) scheme and host to $url based on $baseUrl
      * 
      * @param string $url
