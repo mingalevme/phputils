@@ -10,7 +10,7 @@ class Arr extends \Illuminate\Support\Arr
      * @param array $arr
      * @return array
      */
-    public static function compact(array $arr)
+    public static function compact($arr)
     {
         return static::filter($arr, function($value){
             return (bool) $value;
@@ -98,6 +98,23 @@ class Arr extends \Illuminate\Support\Arr
             }
         }
 
+        return $result;
+    }
+    
+    public static function max($arr, $key)
+    {
+        $result = null;
+        
+        foreach ($arr as $item) {
+            if (static::accessible($item) === false) {
+                continue;
+            } elseif ($result === null) {
+                $result = $item;
+            } elseif (static::get($item, $key) > static::get($result, $key)) {
+                $result = $item;
+            }
+        }
+        
         return $result;
     }
 }
