@@ -75,7 +75,6 @@ class URL
             if ($value === NULL) {
                 unset($parse_url[$key]);
             } elseif ($key === strtoupper($key) || isset($parse_url[$key]) == FALSE) {
-                
                 $parse_url[strtolower($key)] = $parts[$key];
             } elseif ($key == 'path') {
                 $parse_url['path'] = rtrim(str_replace(basename($parse_url['path']), '', $parse_url['path']), '/') . '/' . ltrim($parts['path'], '/');
