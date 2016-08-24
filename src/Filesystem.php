@@ -36,4 +36,16 @@ class Filesystem
 
         return true;
     }
+    
+    public static function rmdir(string $pathname)
+    {
+        $files = array_diff(scandir($pathname), ['.', '..']);
+        
+        foreach ($files as $file) {
+            $subpath = "${pathname}/${file}";
+            is_dir($subpath) ? static::rmdir($subpath) : unlink($subpath);
+        }
+        
+        return rmdir($pathname);
+    }
 }
