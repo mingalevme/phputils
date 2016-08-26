@@ -32,6 +32,7 @@ trait Contextable
             }
         } else {
             $data = get_object_vars($this);
+            unset($data['contextable']);
         }
         
         return Arr::compact(array_merge($extra, $data));
