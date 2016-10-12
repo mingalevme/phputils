@@ -61,7 +61,11 @@ class XML extends \SimpleXMLElement
             return $default;
         }
         
-        if (isset($this->attributes()->{$attr}) === false) {
+        try {
+            if (isset($this->attributes()->{$attr}) === false) {
+                return $default;
+            }
+        } catch (\ErrorException $e) {
             return $default;
         }
 
