@@ -31,9 +31,9 @@ class JSON
      * @param string $json
      * @return mixed
      */
-    public static function decode($json)
+    public static function decode($json, $assoc=true)
     {
-        return \json_decode($json, true);
+        return \json_decode($json, $assoc);
     }
     
     /**
@@ -42,8 +42,8 @@ class JSON
      * @param type $data
      * @return type
      */
-    public static function d($data)
+    public static function d($data, $assoc=true)
     {
-        return static::decode($data);
+        return static::decode($data, $assoc);
     }
 }
