@@ -7,6 +7,17 @@ use Symfony\Component\Process\Exception\ProcessFailedException;
 
 class Filesystem
 {
+    /**
+     *
+     * @var \Psr\Log\LoggerInterface
+     */
+    protected static $logger;
+
+    public static function setLogger(\Psr\Log\LoggerInterface $logger)
+    {
+        self::$logger = $logger;
+    }
+
     public static function mkdir(string $pathname, int $mode = 0777, string $user = null, string $group = null, resource $context = null)
     {
         if (is_dir($pathname)) {
@@ -71,8 +82,26 @@ class Filesystem
         while (count($data = static::getNextFilesForFitDirIntoSize($pathname)) > 0) {
             foreach ($data as $fileData) {
                 list($_, $filesize, $filename) = explode(' ', $fileData, 3);
-                unlink($filename);
-                $currentSize = $currentSize - (int) $filesize;
+                
+                $e = null;
+                
+                try {
+                    unlink($filename);
+                } catch (\ErrorException $e) {
+                    if (self::$logger) {
+                        $errmsg = sprintf('(%s) Error while deleting file: %s', static::class, $e->getMessage());
+                        self::$logger->error($errmsg, [
+                            'filename' => $filename,
+                        ]);
+                    }
+                }
+                
+                if ($e) {
+                    $currentSize = intval(static::runConsoleCommand("du -sb {$pathname}"));
+                } else {
+                    $currentSize = $currentSize - (int) $filesize;
+                }
+                
                 if ($currentSize < $size) {
                     return true;
                 }
