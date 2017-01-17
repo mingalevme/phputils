@@ -13,6 +13,20 @@ class Filesystem
      */
     protected static $logger;
 
+    const UNIT_PREFIXES_POWERS = [
+        ''  => 0,
+        'b' => 0,
+        'B' => 0,
+        'K' => 1,
+        'M' => 2,
+        'G' => 3,
+        'T' => 4,
+        'P' => 5,
+        'E' => 6,
+        'Z' => 7,
+        'Y' => 8,
+    ];
+    
     public static function setLogger(\Psr\Log\LoggerInterface $logger)
     {
         self::$logger = $logger;
@@ -67,11 +81,11 @@ class Filesystem
      * Truncate directory to specified size in bytes by step-by-step deleting last accessed files
      * 
      * @param string $pathname
-     * @param int $size
+     * @param mixed $size
      * @todo add support for human readable sizes: K, M, G, T, P, E, Z, Y (power 1024) or KB, MB, … (power 1000).
      * @return boolean
      */
-    public static function fitDirIntoSize(string $pathname, int $size)
+    public static function fitDirIntoSize(string $pathname, $size)
     {
         $currentSize = intval(static::runConsoleCommand("du -sb {$pathname}"));
         
@@ -131,5 +145,48 @@ class Filesystem
         $output = $process->getOutput();
         
         return $output;
+    }
+    
+    public static function humanizeSize(int $size, int $precision = 2, $useMetricPrefix = true)
+    {
+        $base = $useMetricPrefix ? 1000 : 1024;
+        
+        foreach (self::UNIT_PREFIXES_POWERS as $prefix => $exp) {
+            if ($size < pow($base, $exp + 1)) {
+                return round($size / pow($base, $exp), $precision) . $prefix . ($useMetricPrefix ? 'b' : 'iB');
+            }
+        }
+        
+        throw new Exception('Size is too big');
+    }
+    
+    /**
+     * GB, G - 1000, GiB - 1024
+     * 
+     * @param string $size E.g. 300M, 1.5GiB
+     * @throws Exception
+     */
+    public static function unhumanizeSize(string $size)
+    {
+        if (preg_match('/\d+\.\d+b/', $size)) {
+            throw new Exception("Invalid size format or unknown/unsupported units");
+        }
+        
+        $supportedUnits = implode('', array_keys(self::UNIT_PREFIXES_POWERS));
+        $regexp = "/^(\d+(?:\.\d+)?)(([{$supportedUnits}])((?<!b|B)(b|B|iB))?)?$/";
+        
+        if ((bool) preg_match($regexp, $size, $matches) === false) {
+            throw new Exception("Invalid size format or unknown/unsupported units");
+        }
+        
+        $prefix = isset($matches[3]) ? $matches[3] : 'b';
+        
+        $base = isset($matches[4]) && $matches[4] === 'iB' ? 1024 : 1000;
+        
+        if (strpos($matches[1], '.') !== false) {
+            return intval(floatval($matches[1]) * pow($base, self::UNIT_PREFIXES_POWERS[$prefix]));
+        } else {
+            return intval($matches[1]) * pow($base, self::UNIT_PREFIXES_POWERS[$prefix]);
+        }
     }
 }
