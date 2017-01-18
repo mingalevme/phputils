@@ -5,10 +5,10 @@ namespace Mingalevme\Utils;
 class Filesize
 {
     const UNIT_PREFIXES_POWERS = [
-        ''  => 0,
         'B' => 0,
-        'k' => 1,
+        ''  => 0,
         'K' => 1,
+        'k' => 1,
         'M' => 2,
         'G' => 3,
         'T' => 4,
@@ -19,32 +19,32 @@ class Filesize
     ];
     
     /**
-     * 
+     * Convert size in bytes to human readble filesize (IEC)
      * 
      * @param int $size Size in bytes
      * @param int|float $precision The optional number of decimal digits to round to, default is <b>2</b>
      * @param bool $useBinaryPrefix Use powers-of-two (1024) instead of powers-of-ten (1000), default is <b>false</b>
      * @return string Human readable size
-     * @throws Exception
      */
     public static function humanize($size, int $precision = 2, bool $useBinaryPrefix = false)
     {
         $base = $useBinaryPrefix ? 1024 : 1000;
-        
-        foreach (self::UNIT_PREFIXES_POWERS as $prefix => $exp) {
-            if ($size < pow($base, $exp + 1)) {
-                return round($size / pow($base, $exp), $precision) . ($useBinaryPrefix ? strtoupper($prefix) . 'iB' : $prefix . 'B');
-            }
-        }
-        
-        throw new Exception('Size is too big');
+        $limit = array_values(self::UNIT_PREFIXES_POWERS)[count(self::UNIT_PREFIXES_POWERS) - 1];
+        $power = ($_ = floor(log($size, $base))) > $limit ? $limit : $_;
+        $prefix = array_flip(self::UNIT_PREFIXES_POWERS)[$power];
+        $multiple = ($useBinaryPrefix ? strtoupper($prefix) . 'iB' : $prefix . 'B');
+        return round($size / pow($base, $power), $precision) . $multiple;
     }
     
     /**
+     * Convert human readble filesize (IEC) to bytesize
+     * 
+     * https://en.wikipedia.org/wiki/Metric_prefix
+     * https://en.wikipedia.org/wiki/Binary_prefix
      * GB, G - 1000, GiB - 1024
      * 
-     * @param string $size E.g. 300M, 1.5GiB
-     * @return int
+     * @param string $size E.g. 300MB, 1.5GiB
+     * @return int Size in bytes
      * @throws Exception
      */
     public static function dehumanize(string $size)

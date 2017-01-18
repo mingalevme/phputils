@@ -35,7 +35,7 @@ class FilesizeTest extends PHPUnit_Framework_TestCase
             ['1KiB',    1 * pow(1024, 1),   2,  true],
             ['3GiB',    3 * pow(1024, 3),   2,  true],
             
-            [0,         1 * pow(1000, 9),   2,  false, 'Mingalevme\Utils\Exception', 'Size is too big'],
+            ['1000YB',  1 * pow(1000, 9),   2,  false],
         ];
     }
     
