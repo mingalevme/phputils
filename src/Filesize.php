@@ -6,8 +6,8 @@ class Filesize
 {
     const UNIT_PREFIXES_POWERS = [
         ''  => 0,
-        'b' => 0,
         'B' => 0,
+        'k' => 1,
         'K' => 1,
         'M' => 2,
         'G' => 3,
@@ -22,8 +22,8 @@ class Filesize
      * 
      * 
      * @param int $size Size in bytes
-     * @param int|float $precision The optional number of decimal digits to round to, default is 2
-     * @param bool $useBinaryPrefix Use power of 2 (1024) instead of power of 10 (1000)
+     * @param int|float $precision The optional number of decimal digits to round to, default is <b>2</b>
+     * @param bool $useBinaryPrefix Use powers-of-two (1024) instead of powers-of-ten (1000), default is <b>false</b>
      * @return string Human readable size
      * @throws Exception
      */
@@ -33,7 +33,7 @@ class Filesize
         
         foreach (self::UNIT_PREFIXES_POWERS as $prefix => $exp) {
             if ($size < pow($base, $exp + 1)) {
-                return round($size / pow($base, $exp), $precision) . $prefix . ($useBinaryPrefix ? 'iB' : 'b');
+                return round($size / pow($base, $exp), $precision) . ($useBinaryPrefix ? strtoupper($prefix) . 'iB' : $prefix . 'B');
             }
         }
         
@@ -49,18 +49,22 @@ class Filesize
      */
     public static function dehumanize(string $size)
     {
-        if (preg_match('/\d+\.\d+b/', $size)) {
+        if (preg_match('/\d+\.\d+B/', $size)) {
+            throw new Exception("Invalid size format or unknown/unsupported units");
+        }
+        
+        if (preg_match('/\d+kiB/', $size)) {
             throw new Exception("Invalid size format or unknown/unsupported units");
         }
         
         $supportedUnits = implode('', array_keys(self::UNIT_PREFIXES_POWERS));
-        $regexp = "/^(\d+(?:\.\d+)?)(([{$supportedUnits}])((?<!b|B)(b|B|iB))?)?$/";
+        $regexp = "/^(\d+(?:\.\d+)?)(([{$supportedUnits}])((?<!B)(B|iB))?)?$/";
         
         if ((bool) preg_match($regexp, $size, $matches) === false) {
             throw new Exception("Invalid size format or unknown/unsupported units");
         }
         
-        $prefix = isset($matches[3]) ? $matches[3] : 'b';
+        $prefix = isset($matches[3]) ? $matches[3] : 'B';
         
         $base = isset($matches[4]) && $matches[4] === 'iB' ? 1024 : 1000;
         
