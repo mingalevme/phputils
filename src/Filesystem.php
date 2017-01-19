@@ -67,11 +67,10 @@ class Filesystem
      * Truncate directory to specified size in bytes by step-by-step deleting last accessed files
      * 
      * @param string $pathname
-     * @param mixed $size 
-     * @todo add support for human readable sizes: K, M, G, T, P, E, Z, Y (power 1024) or KB, MB, … (power 1000).
+     * @param int $size
      * @return boolean
      */
-    public static function fitDirIntoSize(string $pathname, $size)
+    public static function fitDirIntoSize(string $pathname, int $size)
     {
         $currentSize = intval(static::runConsoleCommand("du -sb {$pathname}"));
         

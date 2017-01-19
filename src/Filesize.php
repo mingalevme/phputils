@@ -37,13 +37,12 @@ class Filesize
     }
     
     /**
-     * Convert human readble filesize (IEC) to bytesize
+     * Convert human readble filesize (IEC) to size in bytes
      * 
      * https://en.wikipedia.org/wiki/Metric_prefix
      * https://en.wikipedia.org/wiki/Binary_prefix
-     * GB, G - 1000, GiB - 1024
      * 
-     * @param string $size E.g. 300MB, 1.5GiB
+     * @param string $size Human readable size
      * @return int Size in bytes
      * @throws Exception
      */
