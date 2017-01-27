@@ -7,12 +7,16 @@ use Symfony\Component\Process\Exception\ProcessFailedException;
 
 class Filesystem
 {
+    const FIT_DIR_INTO_SIZE_DIR_SIZE_COUNTING_TIMEOUT = 'fitDirIntoSizeDirSizeCountingTimeout';
+    const FIT_DIR_INTO_SIZE_GET_NEXT_FILES_EXECUTION_TIMEOUT = 'fitDirIntoSizeGetNextFilesExecutionTimeout';
+    
     /**
      *
      * @var \Psr\Log\LoggerInterface
      */
     protected static $logger;
-    
+
+
     public static function setLogger(\Psr\Log\LoggerInterface $logger)
     {
         self::$logger = $logger;
@@ -70,15 +74,19 @@ class Filesystem
      * @param int $size
      * @return boolean
      */
-    public static function fitDirIntoSize(string $pathname, int $size)
+    public static function fitDirIntoSize(string $pathname, int $size, array $options = [])
     {
-        $currentSize = intval(static::runConsoleCommand("du -sb {$pathname}"));
+        $dirSizeCountingTimeout = array_get($options, self::FIT_DIR_INTO_SIZE_DIR_SIZE_COUNTING_TIMEOUT);
+        
+        $currentSize = intval(static::runConsoleCommand("du -sb {$pathname}", null, null, null, $dirSizeCountingTimeout));
         
         if ($currentSize < $size) {
             return true;
         }
         
-        while (count($data = static::getNextFilesForFitDirIntoSize($pathname)) > 0) {
+        $getNextFilesExecutionTimeout = array_get($options, self::FIT_DIR_INTO_SIZE_GET_NEXT_FILES_EXECUTION_TIMEOUT);
+        
+        while (count($data = static::getNextFilesForFitDirIntoSize($pathname, null, null, null, $getNextFilesExecutionTimeout)) > 0) {
             foreach ($data as $fileData) {
                 list($_, $filesize, $filename) = explode(' ', $fileData, 3);
                 
@@ -110,16 +118,39 @@ class Filesystem
         return false;
     }
     
-    protected static function getNextFilesForFitDirIntoSize(string $pathname)
+    /**
+     * 
+     * @param string         $pathname    The directory path
+     * @param string|null    $cwd         The working directory or null to use the working dir of the current PHP process
+     * @param array|null     $env         The environment variables or null to use the same environment as the current PHP process
+     * @param string|null    $input       The input
+     * @param int|float|null $timeout     The timeout in seconds or null to disable
+     * @param array          $options     An array of options for proc_open
+     * @return string
+     */
+    protected static function getNextFilesForFitDirIntoSize(string $pathname, $cwd = null, array $env = null, $input = null, $timeout = 60, array $options = array())
     {
-        $data = explode(\PHP_EOL, static::runConsoleCommand("find {$pathname} -type f -printf \"%T@ %s %p\n\" | sort -n | head -n1000"));
+        $output = static::runConsoleCommand("find {$pathname} -type f -printf \"%T@ %s %p\n\" | sort -n | head -n1000", $cwd, $env, $input, $timeout, $options);
+        $data = explode(\PHP_EOL, $output);
         unset($data[count($data) - 1]);
         return $data;
     }
 
-    protected static function runConsoleCommand($command)
+    /**
+     * Run command line via \Symfony\Component\Process\Process
+     *
+     * @param string         $commandline The command line to run
+     * @param string|null    $cwd         The working directory or null to use the working dir of the current PHP process
+     * @param array|null     $env         The environment variables or null to use the same environment as the current PHP process
+     * @param string|null    $input       The input
+     * @param int|float|null $timeout     The timeout in seconds or null to disable
+     * @param array          $options     An array of options for proc_open
+     *
+     * @throws RuntimeException When proc_open is not installed
+     */
+    protected static function runConsoleCommand($commandline, $cwd = null, array $env = null, $input = null, $timeout = 60, array $options = array())
     {
-        $process = new Process($command);
+        $process = new Process($commandline, $cwd, $env, $input, $timeout, $options);
         
         $process->run();
         
