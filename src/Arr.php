@@ -5,12 +5,23 @@ namespace Mingalevme\Utils;
 class Arr extends \Illuminate\Support\Arr
 {
     /**
-     * Recursivly remove all falsy values from array
+     * @deprecated Use <b>compress</b> instead
      * 
      * @param array $arr
      * @return array
      */
     public static function compact($arr)
+    {
+        return static::compress($arr);
+    }
+    
+    /**
+     * Return a copy of $arr without any falsy values (including empty arrays)
+     * 
+     * @param array $arr
+     * @return array
+     */
+    public static function compress($arr)
     {
         return static::filter($arr, function($value){
             return (bool) $value;
