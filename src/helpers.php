@@ -2,7 +2,7 @@
 
 use Mingalevme\Utils\Arr;
 
-if (! function_exists('array_compact')) {
+if (! function_exists('array_compress')) {
     /**
      * Recursivly remove all falsy values from array
      *
@@ -11,6 +11,6 @@ if (! function_exists('array_compact')) {
      */
     function array_compact(array $array)
     {
-        return Arr::compact($array);
+        return Arr::compress($array);
     }
 }
