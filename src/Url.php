@@ -25,14 +25,14 @@ class Url
     ];*/
     
     static protected $mapping = [
-        self::SCHEME => \PHP_URL_SCHEME,
-        self::HOST => \PHP_URL_HOST,
-        self::PORT => \PHP_URL_PORT,
-        self::USER => \PHP_URL_USER,
-        self::PASS => \PHP_URL_PASS,
-        self::PATH => \PHP_URL_PATH,
-        self::QUERY => \PHP_URL_QUERY,
-        self::FRAGMENT => \PHP_URL_FRAGMENT,
+        self::SCHEME    => \PHP_URL_SCHEME,
+        self::HOST      => \PHP_URL_HOST,
+        self::PORT      => \PHP_URL_PORT,
+        self::USER      => \PHP_URL_USER,
+        self::PASS      => \PHP_URL_PASS,
+        self::PATH      => \PHP_URL_PATH,
+        self::QUERY     => \PHP_URL_QUERY,
+        self::FRAGMENT  => \PHP_URL_FRAGMENT,
     ];
 
     /**
@@ -44,7 +44,7 @@ class Url
      * @param array &$new_url [optional] If set, it will be filled with the parts of the composed url like parse_url() would return
      * @return string The new URL string
      */
-    public static function build($url, $parts=[], &$new_url=false)
+    public static function build($url, $parts=[], &$new_url = false)
     {
         $aliases = [
             'u' => 'user',
@@ -72,9 +72,9 @@ class Url
         $parse_url = parse_url(trim($url));
         
         foreach ($parts as $key => $value) {
-            if ($value === NULL) {
+            if ($value === null) {
                 unset($parse_url[$key]);
-            } elseif ($key === strtoupper($key) || isset($parse_url[$key]) == FALSE) {
+            } elseif ($key === strtoupper($key) || isset($parse_url[$key]) == false) {
                 $parse_url[strtolower($key)] = $parts[$key];
             } elseif ($key == 'path') {
                 $parse_url['path'] = rtrim(str_replace(basename($parse_url['path']), '', $parse_url['path']), '/') . '/' . ltrim($parts['path'], '/');
@@ -135,7 +135,7 @@ class Url
      * NULL will be returned.
      * 
      */
-    public static function parse($url, string $component = null)
+    public static function parse($url, $component = null)
     {
         if ($component && isset(self::$mapping[$component]) === false) {
             throw new \Exception("Unknown component: {$component}");
@@ -200,8 +200,33 @@ class Url
             return http_build_query($params, $prefix, $separator);
         }
     }
+    
+    /**
+     * Convenient way to call parse_str
+     * 
+     * @param string $query
+     * @return array
+     */
+    public static function parseQueryString($query)
+    {
+        parse_str($query, $result);
+        return $result;
+    }
+    
+    /**
+     * Parse URL and return query string as assoc array
+     * 
+     * @param string $url
+     * @return array
+     */
+    public static function parseQueryStringFromUrl($url)
+    {
+        $query = static::parse($url, static::QUERY);
+        parse_str($query, $result);
+        return $result;
+    }
 
-        /**
+    /**
      * Set (if not specified) scheme and host to $url based on $baseUrl
      * 
      * @param string $url
