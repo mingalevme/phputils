@@ -1,6 +1,8 @@
-<?php namespace Mingalevme\Utils;
+<?php
 
-class JSON
+namespace Mingalevme\Utils;
+
+class Json
 {
     /**
      * Encode data to JSON with options:
@@ -26,7 +28,7 @@ class JSON
     }
     
     /**
-     * Decode JSON to assoc data
+     * Decode JSON to assoc (by default) data
      * 
      * @param string $json
      * @return mixed
