@@ -120,7 +120,7 @@ class Url
      * self::HOST,
      * self::PORT,
      * self::USER,
-     * self::PASSWORD,
+     * self::PASS,
      * self::PATH,
      * self::QUERY,
      * self::FRAGMENT
