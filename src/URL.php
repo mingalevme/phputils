@@ -1,6 +1,8 @@
-<?php namespace Mingalevme\Utils;
+<?php
 
-class URL
+namespace Mingalevme\Utils;
+
+class Url
 {
     const SCHEME    = 'scheme';
     const HOST      = 'host';
