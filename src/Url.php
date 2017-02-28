@@ -8,7 +8,7 @@ class Url
     const HOST      = 'host';
     const PORT      = 'port';
     const USER      = 'user';
-    const PASSWORD  = 'password';
+    const PASS      = 'pass';
     const PATH      = 'path';
     const QUERY     = 'query';
     const FRAGMENT  = 'fragment';
@@ -18,7 +18,7 @@ class Url
         \PHP_URL_HOST => 'host',
         \PHP_URL_PORT => 'port',
         \PHP_URL_USER => 'user',
-        \PHP_URL_PASS => 'password',
+        \PHP_URL_PASS => 'pass',
         \PHP_URL_PATH => 'path',
         \PHP_URL_QUERY => 'query',
         \PHP_URL_FRAGMENT => 'fragment',
@@ -29,7 +29,7 @@ class Url
         self::HOST => \PHP_URL_HOST,
         self::PORT => \PHP_URL_PORT,
         self::USER => \PHP_URL_USER,
-        self::PASSWORD => \PHP_URL_PASS,
+        self::PASS => \PHP_URL_PASS,
         self::PATH => \PHP_URL_PATH,
         self::QUERY => \PHP_URL_QUERY,
         self::FRAGMENT => \PHP_URL_FRAGMENT,
@@ -46,15 +46,13 @@ class Url
      */
     public static function build($url, $parts=[], &$new_url=false)
     {
-        $url = trim($url);
-
-        // Aliases
         $aliases = [
             'u' => 'user',
             's' => 'scheme',
             'h' => 'host',
+            'p' => 'path', // PATH (!) NOT PASSWORD BECAUSE PATH IS MORE USED
             'q' => 'query',
-            'f' => 'fragment'
+            'f' => 'fragment',
         ];
         
         // Resolve aliases
@@ -71,7 +69,7 @@ class Url
         }
 
         // Parse the original URL
-        $parse_url = parse_url($url);
+        $parse_url = parse_url(trim($url));
         
         foreach ($parts as $key => $value) {
             if ($value === NULL) {
