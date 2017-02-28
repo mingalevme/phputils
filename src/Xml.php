@@ -2,7 +2,7 @@
 
 namespace Mingalevme\Utils;
 
-class XML extends \SimpleXMLElement
+class Xml extends \SimpleXMLElement
 {
     /**
      * Shortcut for new \SimpleXMLElement($data, $options, <b>false</b>, $ns, $is_prefix)
