@@ -83,7 +83,7 @@ class Arr extends \Illuminate\Support\Arr
 
     /**
      * Makes the array where keys is the subarray values by $key and values is the subarrays.
-     * If $valueAttr is specified, the result array values 
+     * If $valueAttr is specified, only attr with key $valueAttr will be assign to $keyAttr
      * 
      * @param array $array Array of associative arrays
      * @param string $keyAttr
@@ -127,5 +127,24 @@ class Arr extends \Illuminate\Support\Arr
         }
         
         return $result;
+    }
+    
+    /**
+     * Makes a new array where each item is $key . $sep . $value of each item of source array
+     * 
+     * @param array $arr
+     * @param string $kvsep key => value separator
+     * @param string $psep "$key.$sep.$value" separator
+     * @return string
+     */
+    public static function toString(array $arr, $kvsep, $psep)
+    {
+        $result = [];
+        
+        foreach ($arr as $k => $v) {
+            $result[] = "{$k}{$kvsep}{$v}";
+        }
+        
+        return implode($psep, $result);
     }
 }
