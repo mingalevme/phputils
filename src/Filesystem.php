@@ -22,14 +22,18 @@ class Filesystem
         self::$logger = $logger;
     }
 
-    public static function mkdir(string $pathname, int $mode = 0777, string $user = null, string $group = null, resource $context = null)
+    /**
+     * Wtf?
+     * DELETE ME IF YOU CAN
+     */
+    public static function mkdir2($pathname, $mode = null, string $user = null, string $group = null, resource $context = null)
     {
         if (is_dir($pathname)) {
             return true;
         }
 
         if (is_dir(dirname($pathname)) === false) {
-            static::mkdir(dirname($pathname), $mode, $user, $group, $context);
+            static::mkdir(dirname($pathname), $mode ?: 0777, $user, $group, $context);
         }
 
         try {
@@ -55,8 +59,35 @@ class Filesystem
         return true;
     }
     
+    /**
+     * Create directory recursively
+     * 
+     * @param string $pathname
+     * @param int $mode
+     * @param resource $context
+     * @return bool <b>true</b> on success or <b>false</b> on failure.
+     */
+    public static function mkdir($pathname, $mode = 0777, resource $context = null)
+    {
+        if ($context) {
+            return \mkdir($pathname, $mode, true, $context);
+        } else {
+            return \mkdir($pathname, $mode, true);
+        }
+    }
+    
+    /**
+     * Remove directories and their contents recursively
+     * 
+     * @param string $pathname
+     * @return boolean
+     */
     public static function rmdir(string $pathname)
     {
+        if (is_dir($pathname) === false) {
+            return false;
+        }
+        
         $files = array_diff(scandir($pathname), ['.', '..']);
         
         foreach ($files as $file) {
@@ -68,7 +99,99 @@ class Filesystem
     }
     
     /**
-     * Truncate directory to specified size in bytes by step-by-step deleting last accessed files
+     * Recursively changes file mode
+     * 
+     * @param string $filename Path to the file or directory
+     * @param int $mode <p>
+     * Note that <i>mode</i> is not automatically
+     * assumed to be an octal value, so to ensure the expected operation,
+     * you need to prefix <i>mode</i> with a zero (0).
+     * Strings such as "g+w" will not work properly.
+     * </p>
+     * @return boolean
+     */
+    public static function chmod($filename, $mode)
+    {
+        $files = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($filename));
+        
+        foreach ($files as $file) {
+            /* @var $file \SplFileInfo */
+            if ($file->getFilename() !== '..') {
+                \chmod(\realpath($file->getPathname()), $mode);
+            }
+        }
+        
+        return true;
+    }
+    
+    /**
+     * Recursively changes file owner
+     * 
+     * @param string $filename Path to the file or directory
+     * @param int|string $user A user name or number.
+     * @return bool
+     */
+    public static function chown($filename, $user)
+    {
+        $files = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($filename));
+        
+        foreach ($files as $file) {
+            /* @var $file \SplFileInfo */
+            if ($file->getFilename() !== '..') {
+                \chown(\realpath($file->getPathname()), $user);
+            }
+        }
+        
+        return true;
+    }
+    
+    /**
+     * Recursively changes file owner
+     * 
+     * @param string $filename Path to the file or directory
+     * @param int|string $group A user name or number.
+     * @return bool
+     */
+    public static function chgrp($filename, $group )
+    {
+        $files = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($filename));
+        
+        foreach ($files as $file) {
+            /* @var $file \SplFileInfo */
+            if ($file->getFilename() !== '..') {
+                \chgrp(\realpath($file->getPathname()), $group);
+            }
+        }
+        
+        return true;
+    }
+
+    /**
+     * Gets full directory size
+     * 
+     * @param string $dirname
+     * @return int
+     * @throws \Exception
+     */
+    public static function dirsize($dirname)
+    {
+        if (is_dir($dirname) === false) {
+            throw new \Exception("{$dirname} is not a directory");
+        }
+        
+        $size = 0;
+        
+        foreach (new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($dirname, \RecursiveDirectoryIterator::SKIP_DOTS)) as $file) {
+            /* @var $file \SplFileInfo */
+            $size += $file->getSize();
+        }
+        
+        return $size; 
+    }
+
+    /**
+     * Truncate directory to specified size in bytes by step-by-step deleting last accessed files.
+     * Works only on *nix systrems.
      * 
      * @param string $pathname
      * @param int $size

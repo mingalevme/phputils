@@ -2,8 +2,14 @@
 
 namespace Mingalevme\Utils;
 
-class Str extends \Illuminate\Support\Arr
+class Str
 {
+    /**
+     * Generate a safe random string
+     * 
+     * @param type $length
+     * @return type
+     */
     public static function random($length)
     {
         if (function_exists('\random_bytes')) {

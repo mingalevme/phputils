@@ -10,6 +10,8 @@
         }
     ],
     "require": {
+        "php" : ">=5.4.0",
+        "ext-mbstring": "*",
         "illuminate/support": "*",
         "symfony/process": "*"
     },
