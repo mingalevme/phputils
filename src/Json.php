@@ -2,6 +2,8 @@
 
 namespace Mingalevme\Utils;
 
+use Mingalevme\Utils\Json\Exception\ParseException;
+
 class Json
 {
     /**
@@ -35,7 +37,37 @@ class Json
      */
     public static function decode($json, $assoc=true)
     {
-        return \json_decode($json, $assoc);
+        $data = \json_decode($json, $assoc);
+        
+        switch (json_last_error()) {
+            case \JSON_ERROR_NONE:
+                $error = null;
+                break;
+            case \JSON_ERROR_DEPTH:
+                $error = 'Maximum stack depth exceeded';
+                break;
+            case \JSON_ERROR_STATE_MISMATCH:
+                $error = 'State mismatch (invalid or malformed JSON)';
+                break;
+            case \JSON_ERROR_CTRL_CHAR:
+                $error = 'Control character error, possibly incorrectly encoded';
+                break;
+            case \JSON_ERROR_SYNTAX:
+                $error = 'Syntax error';
+                break;
+            case \JSON_ERROR_UTF8:
+                $error = 'Malformed UTF-8 characters, possibly incorrectly encoded';
+                break;
+            default:
+                $error = 'Unknown error';
+                break;
+        }
+        
+        if ($error) {
+            throw new ParseException($error);
+        }
+        
+        return $data;
     }
     
     /**
