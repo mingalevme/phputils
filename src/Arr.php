@@ -5,6 +5,18 @@ namespace Mingalevme\Utils;
 class Arr extends \Illuminate\Support\Arr
 {
     /**
+     * Rename array key
+     * 
+     * @param array $arr
+     * @return array
+     */
+    public static function rename(&$arr, $old, $new)
+    {
+        $arr[$new] = $arr[$old];
+        unset($arr[$old]);
+    }
+    
+    /**
      * @deprecated Use <b>compress</b> instead
      * 
      * @param array $arr
