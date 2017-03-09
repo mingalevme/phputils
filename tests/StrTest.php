@@ -20,6 +20,17 @@ class StrTest extends \PHPUnit_Framework_TestCase
         return [
             [
                 'simple_test',
+                'simple_test',
+                S::LOWER,
+            ],
+            [
+                'Simple_test',
+                'simple_test',
+                S::UPPER,
+            ],
+            
+            [
+                'simple_test',
                 'simpleTest',
                 S::LOWER,
             ],
