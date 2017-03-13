@@ -94,34 +94,12 @@ class Arr extends \Illuminate\Support\Arr
     }
 
     /**
-     * Makes the array where keys is the subarray values by $key and values is the subarrays.
-     * If $valueAttr is specified, only attr with key $valueAttr will be assign to $keyAttr
-     * 
-     * @param array $array Array of associative arrays
-     * @param string $keyAttr
-     * @param string $valueAttr
+     * @deprecated
      * @return array
      */
     public static function toMap($array, $keyAttr, $valueAttr=null)
     {
-        $result = [];
-
-        foreach ($array as $data) {
-            if (array_key_exists($keyAttr, $data) === FALSE) {
-                continue;
-            }
-            if ($valueAttr) {
-                if (array_key_exists($valueAttr, $data)) {
-                    $result[$data[$keyAttr]] = $data[$valueAttr];
-                } else {
-                    $result[$data[$keyAttr]] = NULL;
-                }
-            } else {
-                $result[$data[$keyAttr]] = $data;
-            }
-        }
-
-        return $result;
+        throw new \Exception("Method is depracated, use array_column() instead");
     }
     
     public static function max($arr, $key)
