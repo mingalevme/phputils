@@ -92,15 +92,6 @@ class Arr extends \Illuminate\Support\Arr
         
         return NULL;
     }
-
-    /**
-     * @deprecated
-     * @return array
-     */
-    public static function toMap($array, $keyAttr, $valueAttr=null)
-    {
-        throw new \Exception("Method is depracated, use array_column() instead");
-    }
     
     public static function max($arr, $key)
     {
