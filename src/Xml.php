@@ -11,11 +11,11 @@ class Xml extends \SimpleXMLElement
      * @param int $options
      * @param string $ns
      * @param bool $is_prefix
-     * @return \static
+     * @return static
      */
-    public static function fromXml(string $data, int $options = 0, string $ns = "", bool $is_prefix = false)
+    public static function fromXml($data, $options = 0, $ns = "", $is_prefix = false)
     {
-        return new static($data, $options, false, $ns, $is_prefix);
+        return new static(static::safeize($data), $options, false, $ns, $is_prefix);
     }
     
     /**
@@ -25,11 +25,22 @@ class Xml extends \SimpleXMLElement
      * @param int $options
      * @param string $ns
      * @param bool $is_prefix
-     * @return \static
+     * @return static
      */
-    public static function fromUrl(string $url, int $options = 0, string $ns = "", bool $is_prefix = false)
+    public static function fromUrl($url, $options = 0, $ns = "", $is_prefix = false)
     {
         return new static($url, $options, true, $ns, $is_prefix);
+    }
+    
+    /**
+     * Make UTF-8 XML string safe
+     * 
+     * @param type $xml
+     * @return type
+     */
+    public static function safeize($xml)
+    {
+        return \preg_replace('/[^\x{0009}\x{000a}\x{000d}\x{0020}-\x{D7FF}\x{E000}-\x{FFFD}]+/u', ' ', $xml);
     }
 
     public function addChild($name, $value = null, $namespace = null, $CDATA = false)
@@ -113,5 +124,16 @@ class Xml extends \SimpleXMLElement
         }
 
         return null;
+    }
+    
+    public function asXML($filename = null)
+    {
+        $xml = trim(explode('?>', parent::asXML(), 2)[1]);
+        
+        if ($filename) {
+            file_put_contents($filename, $xml);
+        } else {
+            return $xml;
+        }
     }
 }
