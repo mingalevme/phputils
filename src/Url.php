@@ -266,7 +266,7 @@ class Url
      * @param string $url
      * @return bool
      */
-    public static function isRelated($url)
+    public static function isRelative($url)
     {
         return !self::isAbsolute($url);
     }
