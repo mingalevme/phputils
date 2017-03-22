@@ -32,7 +32,9 @@ class Filesystem
      */
     public static function mkdir($pathname, $mode = 0777, resource $context = null)
     {
-        if ($context) {
+        if (is_dir($pathname)) {
+            return true;
+        } elseif ($context) {
             return \mkdir($pathname, $mode, true, $context);
         } else {
             return \mkdir($pathname, $mode, true);
