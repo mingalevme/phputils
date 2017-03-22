@@ -128,7 +128,13 @@ class Xml extends \SimpleXMLElement
     
     public function asXML($filename = null)
     {
-        $xml = trim(explode('?>', parent::asXML(), 2)[1]);
+        $xml = explode('?>', parent::asXML(), 2);
+        
+        if (count($xml) > 1) {
+            $xml = trim($xml[1]);
+        } else {
+            $xml = trim($xml[0]);
+        }
         
         if ($filename) {
             file_put_contents($filename, $xml);
