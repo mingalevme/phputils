@@ -16,7 +16,6 @@ class Filesystem
      */
     protected static $logger;
 
-
     public static function setLogger(\Psr\Log\LoggerInterface $logger)
     {
         self::$logger = $logger;
@@ -32,7 +31,7 @@ class Filesystem
      */
     public static function mkdir($pathname, $mode = 0777, resource $context = null)
     {
-        if (is_dir($pathname)) {
+        if (\is_dir($pathname)) {
             return true;
         } elseif ($context) {
             return \mkdir($pathname, $mode, true, $context);
@@ -49,18 +48,18 @@ class Filesystem
      */
     public static function rmdir(string $pathname)
     {
-        if (is_dir($pathname) === false) {
+        if (\is_dir($pathname) === false) {
             return false;
         }
         
-        $files = array_diff(scandir($pathname), ['.', '..']);
+        $files = \array_diff(scandir($pathname), ['.', '..']);
         
         foreach ($files as $file) {
             $subpath = "${pathname}/${file}";
-            is_dir($subpath) ? static::rmdir($subpath) : unlink($subpath);
+            \is_dir($subpath) ? static::rmdir($subpath) : \unlink($subpath);
         }
         
-        return rmdir($pathname);
+        return \rmdir($pathname);
     }
     
     /**
@@ -164,27 +163,27 @@ class Filesystem
      */
     public static function fitDirIntoSize(string $pathname, int $size, array $options = [])
     {
-        $dirSizeCountingTimeout = array_get($options, self::FIT_DIR_INTO_SIZE_DIR_SIZE_COUNTING_TIMEOUT);
+        $dirSizeCountingTimeout = \array_get($options, self::FIT_DIR_INTO_SIZE_DIR_SIZE_COUNTING_TIMEOUT);
         
-        $currentSize = intval(static::runConsoleCommand("du -sb {$pathname}", null, null, null, $dirSizeCountingTimeout));
+        $currentSize = \intval(static::runConsoleCommand("du -sb {$pathname}", null, null, null, $dirSizeCountingTimeout));
         
         if ($currentSize < $size) {
             return true;
         }
         
-        $getNextFilesExecutionTimeout = array_get($options, self::FIT_DIR_INTO_SIZE_GET_NEXT_FILES_EXECUTION_TIMEOUT);
+        $getNextFilesExecutionTimeout = \array_get($options, self::FIT_DIR_INTO_SIZE_GET_NEXT_FILES_EXECUTION_TIMEOUT);
         
         while (count($data = static::getNextFilesForFitDirIntoSize($pathname, null, null, null, $getNextFilesExecutionTimeout)) > 0) {
             foreach ($data as $fileData) {
-                list($_, $filesize, $filename) = explode(' ', $fileData, 3);
+                list($_, $filesize, $filename) = \explode(' ', $fileData, 3);
                 
                 $e = null;
                 
                 try {
-                    unlink($filename);
+                    \unlink($filename);
                 } catch (\ErrorException $e) {
                     if (self::$logger) {
-                        $errmsg = sprintf('(%s) Error while deleting file: %s', static::class, $e->getMessage());
+                        $errmsg = \sprintf('(%s) Error while deleting file: %s', static::class, $e->getMessage());
                         self::$logger->error($errmsg, [
                             'filename' => $filename,
                         ]);
@@ -192,7 +191,7 @@ class Filesystem
                 }
                 
                 if ($e) {
-                    $currentSize = intval(static::runConsoleCommand("du -sb {$pathname}"));
+                    $currentSize = \intval(static::runConsoleCommand("du -sb {$pathname}"));
                 } else {
                     $currentSize = $currentSize - (int) $filesize;
                 }
@@ -219,7 +218,7 @@ class Filesystem
     protected static function getNextFilesForFitDirIntoSize(string $pathname, $cwd = null, array $env = null, $input = null, $timeout = 60, array $options = array())
     {
         $output = static::runConsoleCommand("find {$pathname} -type f -printf \"%T@ %s %p\n\" | sort -n | head -n1000", $cwd, $env, $input, $timeout, $options);
-        $data = explode(\PHP_EOL, $output);
+        $data = \explode(\PHP_EOL, $output);
         unset($data[count($data) - 1]);
         return $data;
     }
