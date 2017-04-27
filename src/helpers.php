@@ -9,7 +9,7 @@ if (! function_exists('array_compress')) {
      * @param  array $array
      * @return array
      */
-    function array_compact(array $array)
+    function array_compress(array $array)
     {
         return Arr::compress($array);
     }
