@@ -31,7 +31,7 @@ class Filesystem
      */
     public static function mkdir($pathname, $mode = 0777, resource $context = null)
     {
-        if (\is_dir($pathname)) {
+        if (\file_exists($pathname)) {
             return true;
         } elseif ($context) {
             return \mkdir($pathname, $mode, true, $context);
