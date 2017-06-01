@@ -116,4 +116,23 @@ class Str
         
         return $mode === self::UPPER ? \ucfirst($result) : \lcfirst($result);
     }
+    
+    public static function randomHumanized($length)
+    {
+        $conso = ["b","c","d","f","g","h","j","k","l","m","n","p","r","s","t","v","w","x","y","z"];
+        $vocal = ["a","e","i","o","u"];
+        
+        srand((double) microtime() * 1000000);
+        
+        $max = $length/2;
+        
+        $password = '';
+        
+        for($i=1; $i <= $max; $i++) {
+          $password .= $conso[rand(0,19)];
+          $password .= $vocal[rand(0,4)];
+        }
+        
+        return $password;
+    }
 }
