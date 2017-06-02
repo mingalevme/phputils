@@ -24,17 +24,17 @@ if (! function_exists('url_get_contents')) {
      * @param array $headers
      * @param array $context
      * @param int $attempts
-     * @param callable $onError
+     * @param $onError
      * @return string
      * @throws \ErrorException
      */
-    function url_get_contents(string $url, &$headers = null, array $context = [], int $attempts = 1, callable $onError = null)
+    function url_get_contents(string $url, &$headers = null, array $context = null, int $attempts = 1, $onError = null)
     {
-        $ctx = \stream_context_create(array_merge_recursive(['http'=>
+        $ctx = \stream_context_create(\array_merge_recursive(['http'=>
             [
                 'timeout' => 30,
             ],
-        ], $context));
+        ], (array) $context));
 
         for ($i = 1 ; $i <= $attempts; $i++) {
             try {

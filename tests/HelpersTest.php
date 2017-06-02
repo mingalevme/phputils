@@ -13,9 +13,24 @@ class HelpersTest extends \PHPUnit_Framework_TestCase
         try {
             $this->assertSame('https://stackoverflow.com/questions/7229885/what-are-the-differences-between-gitignore-and-gitkeep',
                 url_get_contents('https://raw.githubusercontent.com/mingalevme/utils/master/tests/null'));
-            $this->fail('Exception should have been raised');
+            $this->fail('ErrorException should have been raised');
         } catch (\ErrorException $e) {
             $this->assertInstanceOf(\ErrorException::class, $e);
+        }
+        
+        try {
+            $this->assertSame('https://stackoverflow.com/questions/7229885/what-are-the-differences-between-gitignore-and-gitkeep',
+                url_get_contents(
+                    'https://raw.githubusercontent.com/mingalevme/utils/master/tests/null',
+                    $null,
+                    null,
+                    2,
+                    function ($attemp) { throw new \RuntimeException(); }
+                )
+            );
+            $this->fail('RuntimeException should have been raised');
+        } catch (\RuntimeException $e) {
+            $this->assertInstanceOf(\RuntimeException::class, $e);
         }
     }
 }
