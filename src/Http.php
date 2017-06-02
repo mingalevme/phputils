@@ -5,7 +5,7 @@ namespace Mingalevme\Utils;
 class Http
 {
     /**
-     * Parse raw http headers string or array of hesders (i.e. $http_response_header)
+     * Parse raw http headers string or array of headers (i.e. $http_response_header)
      * 
      * @param array|string $input
      * @param int $statusCode
