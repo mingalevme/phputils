@@ -35,4 +35,19 @@ class Sql
         
         return sprintf('ARRAY[%s]', implode(',', $result));
     }
+    
+    public static function assemble(string $sql, array $bindings)
+    {
+        foreach ($bindings as $i => $binding) {
+            if ($binding instanceof \DateTime) {
+                $bindings[$i] = $binding->format('\'Y-m-d H:i:s\'');
+            } else if (is_bool($binding)) {
+                $bindings[$i] = $binding ? 'true' : 'false';
+            } else if (is_string($binding)) {
+                $bindings[$i] = "'$binding'";
+            }
+        }
+
+        return vsprintf(str_replace(['%', '?'], ['%%', '%s'], $sql), $bindings); 
+    }
 }
