@@ -135,4 +135,9 @@ class Str
         
         return $password;
     }
+    
+    public static function explode($delimiter, $string, $limit = null)
+    {
+        return array_map('trim', $limit !== null ? explode($delimiter, $string, $limit) : explode($delimiter, $string));
+    }
 }
