@@ -28,7 +28,7 @@ if (! function_exists('url_get_contents')) {
      * @return string
      * @throws \ErrorException
      */
-    function url_get_contents(string $url, &$headers = null, array $context = null, int $attempts = 1, $onError = null)
+    function url_get_contents($url, array &$headers = null, array $context = null, $attempts = 1, $onError = null)
     {
         $ctx = \stream_context_create(\array_merge_recursive(['http'=>
             [
@@ -36,7 +36,7 @@ if (! function_exists('url_get_contents')) {
             ],
         ], (array) $context));
 
-        for ($i = 1 ; $i <= $attempts; $i++) {
+        for ($i = 1; $i <= $attempts; $i++) {
             try {
                 $content = \file_get_contents($url, false, $ctx);
                 $headers = \Mingalevme\Utils\Http::parseHeaders($http_response_header);
