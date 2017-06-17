@@ -1,5 +1,6 @@
 <?php
 
+use Mingalevme\Utils\Url;
 use Mingalevme\Utils\Arr;
 use Mingalevme\Utils\Json;
 
@@ -13,6 +14,19 @@ if (! function_exists('array_compress')) {
     function array_compress(array $array)
     {
         return Arr::compress($array);
+    }
+}
+
+if (! function_exists('build_url')) {
+    /**
+     * \Mingalevme\Utils\Url::build function alias
+     *
+     * @param  string $json
+     * @return mixed
+     */
+    function build_url($url, $parts=[], &$new_url = false)
+    {
+        return Url::build($url, $parts, $new_url);
     }
 }
 
