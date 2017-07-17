@@ -62,33 +62,46 @@ if (! function_exists('url_get_contents')) {
      * Reads remote content into a string
      * 
      * @param string $url
-     * @param array $headers
+     * @param array &$headers
      * @param array $context
      * @param int $attempts
-     * @param $onError
+     * @param callable $onError
      * @return string
      * @throws \ErrorException
      */
     function url_get_contents($url, array &$headers = null, array $context = null, $attempts = 1, $onError = null)
     {
-        $ctx = \stream_context_create(\array_merge_recursive(['http'=>
-            [
+        if (Url::isAbsolute($url) === false) {
+            throw new \InvalidArgumentException("Invalid value for \$url");
+        }
+        
+        if ($attempts < 1) {
+            throw new \InvalidArgumentException("Invalid value for \$attempts");
+        }
+        
+        $ctx = \stream_context_create(\array_merge_recursive([
+            'http'=> [
                 'timeout' => 30,
+                'ignore_errors' => true,
             ],
         ], (array) $context));
 
         for ($i = 1; $i <= $attempts; $i++) {
-            try {
-                $content = \file_get_contents($url, false, $ctx);
-                $headers = \Mingalevme\Utils\Http::parseHeaders($http_response_header);
-                return $content;
-            } catch (\ErrorException $e) {
-                if ($onError && $i < $attempts) {
-                    $onError($i);
-                }
+            
+            $responseBody = \file_get_contents($url, false, $ctx);
+            
+            $headers = \Mingalevme\Utils\Http::parseHeaders($http_response_header, $statusCode, $statusLine);
+            
+            if ($statusCode === 200) {
+                return $responseBody;
             }
+            
+            if ($onError && ($customResponseBody = $onError($i, $statusCode, $responseBody)) !== null) {
+                return $customResponseBody;
+            }
+            
         }
         
-        throw $e;
+        throw new \ErrorException("url_get_contents(...): failed to open stream: HTTP request failed! {$statusLine}");
     }
 }

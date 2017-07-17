@@ -33,4 +33,15 @@ class HelpersTest extends \PHPUnit_Framework_TestCase
             $this->assertInstanceOf(\RuntimeException::class, $e);
         }
     }
+    
+    public function testUrlGetContentsCustomUserResponseBody()
+    {
+        $url = 'https://raw.githubusercontent.com/mingalevme/utils/master/tests/.foobar';
+        
+        $responseBody = url_get_contents($url, $headers, null, 1, function($attempt, $statusCode, $responseBody){
+            return "url_get_contents/{$attempt}/{$statusCode}/" . trim($responseBody);
+        });
+        
+        $this->assertSame('url_get_contents/1/404/404: Not Found', $responseBody);
+    }
 }
