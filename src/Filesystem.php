@@ -31,13 +31,17 @@ class Filesystem
      */
     public static function mkdir($pathname, $mode = 0777, resource $context = null)
     {
+        try {
+            return $context ? \mkdir($pathname, $mode, true, $context) : \mkdir($pathname, $mode, true);
+        } catch (\ErrorException $e) {
+            \clearstatcache(true, $pathname);
+        }
+        
         if (\file_exists($pathname)) {
             return true;
-        } elseif ($context) {
-            return \mkdir($pathname, $mode, true, $context);
-        } else {
-            return \mkdir($pathname, $mode, true);
         }
+        
+        throw $e;
     }
     
     /**

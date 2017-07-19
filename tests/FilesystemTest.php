@@ -1,5 +1,7 @@
 <?php
 
+//namespace Mingalevme\Utils\Tests;
+
 use Mingalevme\Utils\Str;
 use Mingalevme\Utils\Filesystem;
  
@@ -56,6 +58,17 @@ class FilesystemTest extends PHPUnit_Framework_TestCase
                 ]
             ],
         ];
+    }
+
+    public function testMkdirOnExistingDir()
+    {
+        $dirname = implode(\DIRECTORY_SEPARATOR, [sys_get_temp_dir(), '_mingalevme-utils', 'existing-dir']);
+        
+        Filesystem::mkdir($dirname);
+        
+        $this->assertDirectoryExists($dirname);
+        
+        $this->assertTrue(Filesystem::mkdir($dirname));
     }
     
     public function testDirsize()
