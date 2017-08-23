@@ -105,3 +105,28 @@ if (! function_exists('url_get_contents')) {
         throw new \ErrorException("url_get_contents(...): failed to open stream: HTTP request failed! {$statusLine}");
     }
 }
+
+if (! function_exists('url_get_json_contents')) {
+    
+    function url_get_json_contents($url, array &$headers = null, array $context = null, $attempts = 1, $onError = null)
+    {
+        for ($i = 1; $i <= $attempts; $i++) {
+            
+            try {
+                $data = url_get_contents($url, $headers, $context, 1, $onError);
+            } catch (\ErrorException $e) {
+                continue;
+            }
+            
+            try {
+                return jsond($data);
+            } catch (\Mingalevme\Utils\Json\Exception\ParseException $e) {
+                continue;
+            }
+            
+        }
+        
+        throw $e;
+    }
+    
+}
