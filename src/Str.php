@@ -140,4 +140,12 @@ class Str
     {
         return array_map('trim', $limit !== null ? explode($delimiter, $string, $limit) : explode($delimiter, $string));
     }
+    
+    public static function clean($str)
+    {
+        $str = iconv("UTF-8", "UTF-8//IGNORE", $str); // drop all non utf-8 characters
+        $str = preg_replace('/(?>[\x00-\x1F]|\xC2[\x80-\x9F]|\xE2[\x80-\x8F]{2}|\xE2\x80[\xA4-\xA8]|\xE2\x81[\x9F-\xAF])/', ' ', $str);
+        $str = trim($str);
+        return $str;
+    }
 }
