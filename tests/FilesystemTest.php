@@ -92,6 +92,7 @@ class FilesystemTest extends TestCase
     {
         $this->fillup();
         Filesystem::chmod(self::$fitDirIntoSizeDir, 0777);
+        $this->addToAssertionCount(1);
     }
     
     protected function fillup()
