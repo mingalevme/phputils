@@ -1,8 +1,10 @@
 <?php
- 
+
+namespace Mingalevme\Tests\Utils;
+
 use Mingalevme\Utils\Filesize;
- 
-class FilesizeTest extends PHPUnit_Framework_TestCase
+
+class FilesizeTest extends TestCase
 {
     public static function setUpBeforeClass()
     {
@@ -15,7 +17,7 @@ class FilesizeTest extends PHPUnit_Framework_TestCase
     public function testHumanize($humanSize, $byteSize, $precision, $useBinaryPrefix, $exception=null, $emessage=null)
     {
         if ($exception) {
-            $this->setExpectedException($exception, $emessage);
+            $this->expectException($exception, $emessage);
         }
         
         $this->assertEquals($humanSize, Filesize::humanize($byteSize, $precision, $useBinaryPrefix));
@@ -45,7 +47,7 @@ class FilesizeTest extends PHPUnit_Framework_TestCase
     public function testDehumanize($byteSize, $humanSize, $exception=null, $emessage=null)
     {
         if ($exception) {
-            $this->setExpectedException($exception, $emessage);
+            $this->expectException($exception, $emessage);
         }
         
         $this->assertEquals($byteSize, Filesize::dehumanize($humanSize));

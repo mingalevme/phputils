@@ -1,8 +1,10 @@
 <?php
 
+namespace Mingalevme\Tests\Utils;
+
 use Mingalevme\Utils\Str as S;
 
-class StrTest extends \PHPUnit_Framework_TestCase
+class StrTest extends TestCase
 {
     /**
      * @dataProvider snakeizeDataProvider

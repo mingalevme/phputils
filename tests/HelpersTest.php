@@ -1,8 +1,8 @@
 <?php
 
-namespace Tests\Mingalevme;
+namespace Mingalevme\Tests\Utils;
 
-class HelpersTest extends \PHPUnit_Framework_TestCase
+class HelpersTest extends TestCase
 {
     public function testUrlGetContents()
     {

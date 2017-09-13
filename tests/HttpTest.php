@@ -1,8 +1,10 @@
 <?php
 
+namespace Mingalevme\Tests\Utils;
+
 use Mingalevme\Utils\Http;
 
-class HttpTest extends \PHPUnit_Framework_TestCase
+class HttpTest extends TestCase
 {
     public function testParseHeadser()
     {

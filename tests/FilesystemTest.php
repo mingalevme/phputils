@@ -1,11 +1,11 @@
 <?php
 
-//namespace Mingalevme\Utils\Tests;
+namespace Mingalevme\Tests\Utils;
 
 use Mingalevme\Utils\Str;
 use Mingalevme\Utils\Filesystem;
  
-class FilesystemTest extends PHPUnit_Framework_TestCase
+class FilesystemTest extends TestCase
 {
     const FIT_DIR_INTO_SIZE_MIN_FILESIZE = 10240;
     const FIT_DIR_INTO_SIZE_MIN_MAX_FILESIZE = 102400;

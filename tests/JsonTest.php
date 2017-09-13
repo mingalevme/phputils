@@ -1,12 +1,14 @@
 <?php
- 
+
+namespace Mingalevme\Tests\Utils;
+
 use Mingalevme\Utils\Json as J;
 use Mingalevme\Utils\Json\Exception\ParseException;
 
 /**
  * http://blog.nikolaposa.in.rs/2017/02/13/testing-conventions/
  */
-class JsonTest extends \PHPUnit_Framework_TestCase
+class JsonTest extends TestCase
 {
     /**
      * @test

@@ -1,8 +1,10 @@
 <?php
 
+namespace Mingalevme\Tests\Utils;
+
 use Mingalevme\Utils\Url;
 
-class UrlTest extends PHPUnit_Framework_TestCase
+class UrlTest extends TestCase
 {
     /**
      * @dataProvider buildDataProvider
