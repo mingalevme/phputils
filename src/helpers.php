@@ -17,6 +17,21 @@ if (! function_exists('array_compress')) {
     }
 }
 
+if (! function_exists('array_has_object_with_key_and_value')) {
+    /**
+     * Looks for an array inside input array by key and value
+     *
+     * @param array $array
+     * @param string $key
+     * @param string $value
+     * @return bool
+     */
+    function array_has_object_with_key_and_value(array $array, string $key, string $value)
+    {
+        return Arr::hasObjectWithKeyAndValue($array, $key, $value);
+    }
+}
+
 if (! function_exists('build_url')) {
     /**
      * \Mingalevme\Utils\Url::build function alias

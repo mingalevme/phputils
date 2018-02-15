@@ -128,4 +128,23 @@ class Arr extends \Illuminate\Support\Arr
         
         return implode($psep, $result);
     }
+
+    /**
+     * Looks for an array inside input array by key and value
+     *
+     * @param array $array
+     * @param $key
+     * @param $value
+     * @return bool
+     */
+    public static function hasObjectWithKeyAndValue(array $array, $key, $value)
+    {
+        foreach ($array as $object) {
+            if (is_array($object) && array_key_exists($key, $object) && $object[$key] === $value) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 }
