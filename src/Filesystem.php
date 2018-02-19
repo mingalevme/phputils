@@ -80,7 +80,7 @@ class Filesystem
     public static function unlink(string $pathname, $context = null)
     {
         try {
-            return $context ? \unlink($pathname) : \unlink($pathname, $context);
+            return $context ? \unlink($pathname, $context) : \unlink($pathname);
         } catch (\ErrorException $e) {
             if (\strpos(strtolower($e->getMessage()), 'no such file or directory') !== false) {
                 return true;
