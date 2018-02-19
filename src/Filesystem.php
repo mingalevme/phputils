@@ -69,6 +69,26 @@ class Filesystem
         
         return \rmdir($pathname);
     }
+
+    /**
+     * Safely remove file
+     *
+     * @param string $pathname Path to the file
+     * @return bool Returns TRUE on success or FALSE on failure.
+     * @throws \ErrorException
+     */
+    public static function unlink(string $pathname, $context = null)
+    {
+        try {
+            return $context ? \unlink($pathname) : \unlink($pathname, $context);
+        } catch (\ErrorException $e) {
+            if (\strpos(strtolower($e->getMessage()), 'no such file or directory') !== false) {
+                return true;
+            }
+        }
+
+        throw $e;
+    }
     
     /**
      * Recursively changes file mode
