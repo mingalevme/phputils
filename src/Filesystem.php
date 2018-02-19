@@ -36,7 +36,11 @@ class Filesystem
         } catch (\ErrorException $e) {
             \clearstatcache(true, $pathname);
         }
-        
+
+        if (\strpos(\strtolower($e->getMessage()), 'file exists') !== false) {
+            return true;
+        }
+
         if (\file_exists($pathname)) {
             return true;
         }
