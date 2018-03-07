@@ -144,8 +144,49 @@ class Str
     public static function clean($str)
     {
         $str = iconv("UTF-8", "UTF-8//IGNORE", $str); // drop all non utf-8 characters
-        $str = preg_replace('/(?>[\x00-\x1F]|\xC2[\x80-\x9F]|\xE2[\x80-\x8F]{2}|\xE2\x80[\xA4-\xA8]|\xE2\x81[\x9F-\xAF])/', ' ', $str);
+        /**
+         * &nbsp; ( ): 194.160
+         * &brvbar; (¦): 194.166
+         * &copy; (©): 194.169
+         * &laquo; («): 194.171
+         * &reg; (®): 194.174
+         * &plusmn; (±): 194.177
+         * &micro; (µ): 194.181
+         * &para; (¶): 194.182
+         * &middot; (·): 194.183
+         * &raquo; (»): 194.187
+         * &ndash; (–): 226.128.147
+         * &mdash; (—): 226.128.148
+         * &lsquo; (‘): 226.128.152
+         * &rsquo; (’): 226.128.153
+         * &sbquo; (‚): 226.128.154
+         * &ldquo; (“): 226.128.156
+         * &rdquo; (”): 226.128.157
+         * &bdquo; („): 226.128.158
+         * &dagger; (†): 226.128.160
+         * &Dagger; (‡): 226.128.161
+         * &bull; (•): 226.128.162
+         * &hellip; (…): 226.128.166
+         * &permil; (‰): 226.128.176
+         * &lsaquo; (‹): 226.128.185
+         * &euro; (€): 226.130.172
+         * &trade; (™): 226.132.162
+         *
+         * [\x00-\x1F] -> 00-31
+         * \xC2[\x80-\x9F] -> 194.[128-159]
+         * \xE2[\x80-\x8F]{2} -> 226.[128-143].[128-143]
+         * \xE2\x80[\xA8-\xA9] -> 226.128.[168-169]
+         * \xE2\x81[\x9F-\xAF] -> 226.129.[159-175]
+         */
+        $str = preg_replace('/(?>[\x00-\x1F]|\xC2[\x80-\x9F]|\xE2[\x80-\x8F]{2}|\xE2\x80[\xA8-\xA9]|\xE2\x81[\x9F-\xAF])/', '', $str);
         $str = trim($str);
         return $str;
+    }
+
+    public static function ascii($str)
+    {
+        return array_map(function($x) {
+            return strval(ord($x));
+        }, str_split($str));
     }
 }
