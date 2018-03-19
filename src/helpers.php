@@ -145,3 +145,47 @@ if (! function_exists('url_get_json_contents')) {
     }
     
 }
+
+if (! function_exists('dom_get_elements_by_tag_name_and_class')) {
+    /**
+     * @param DOMDocument|DOMElement $parent
+     * @param string $tagName
+     * @param string $className
+     * @return DOMElement[]
+     */
+    function dom_get_elements_by_tag_name_and_class($parent, string $tagName, string $className)
+    {
+        $nodes = [];
+
+        /** @var DOMElement $node */
+        foreach ($parent->getElementsByTagName($tagName) as $node) {
+            if (preg_match("/\b{$className}\b/", $node->getAttribute('class'))) {
+                $nodes[] = $node;
+            }
+        }
+
+        return $nodes;
+    }
+}
+
+if (! function_exists('trytrytry')) {
+    function trytrytry(callable $task, int $tries = 3, array $allowable = null) {
+
+        if ($tries < 1) {
+            throw new InvalidArgumentException('$tries must be greater than 0');
+        }
+
+        for ($i=0; $i<$tries; $i++) {
+            try {
+                return $task();
+            } catch (\Throwable $e) {
+                if ($allowable && !in_array(get_class($e), $allowable)) {
+                    break;
+                }
+            }
+        }
+
+        throw $e;
+
+    }
+}
