@@ -101,9 +101,15 @@ if (! function_exists('url_get_contents')) {
             ],
         ], (array) $context));
 
+        $exception = null;
+
         for ($i = 1; $i <= $attempts; $i++) {
-            
-            $responseBody = \file_get_contents($url, false, $ctx);
+
+            try {
+                $responseBody = \file_get_contents($url, false, $ctx);
+            } catch (\Throwable $exception) {
+                continue;
+            }
             
             $headers = \Mingalevme\Utils\Http::parseHeaders($http_response_header, $statusCode, $statusLine);
             
@@ -115,6 +121,10 @@ if (! function_exists('url_get_contents')) {
                 return $customResponseBody;
             }
             
+        }
+
+        if (isset($exception)) {
+            throw $exception;
         }
         
         throw new \ErrorException("url_get_contents(...): failed to open stream: HTTP request failed! {$statusLine}");
