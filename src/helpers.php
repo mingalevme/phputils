@@ -94,7 +94,7 @@ if (! function_exists('url_get_contents')) {
             throw new \InvalidArgumentException("Invalid value for \$attempts");
         }
         
-        $ctx = \stream_context_create(\array_merge_recursive([
+        $ctx = \stream_context_create(\array_replace_recursive([
             'http'=> [
                 'timeout' => 30,
                 'ignore_errors' => true,

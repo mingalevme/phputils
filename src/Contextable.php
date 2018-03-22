@@ -2,9 +2,6 @@
 
 namespace Mingalevme\Utils;
 
-use Mingalevme\Utils\Arr;
-use Mingalevme\Utils\Json;
-
 trait Contextable
 {
     /**
@@ -17,7 +14,7 @@ trait Contextable
      */
     protected function getContext(array $extra = [])
     {
-        return Json::e($this->getRawContext($extra));
+        return jsone($this->getRawContext($extra));
     }
     
     /**
@@ -35,6 +32,6 @@ trait Contextable
             unset($data['contextable']);
         }
         
-        return Arr::compact(array_merge($data, $extra));
+        return array_compress(array_merge($data, $extra));
     }
 }
