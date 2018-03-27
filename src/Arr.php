@@ -111,11 +111,12 @@ class Arr extends \Illuminate\Support\Arr
     }
     
     /**
-     * Makes a new array where each item is $key . $sep . $value of each item of source array
+     * Makes a string from array by concatenating each key with it value and subsequent concatenation
+     * the resulted string with each other
      * 
      * @param array $arr
-     * @param string $kvsep key => value separator
-     * @param string $psep "$key.$sep.$value" separator
+     * @param string $kvsep Key and value separator ($key1$kvsep$value1)
+     * @param string $psep Key-Value pairs separator ($key1$kvsep$value1$psep$key2$kvsep$value2$psep...)
      * @return string
      */
     public static function toString(array $arr, $kvsep, $psep)

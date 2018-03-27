@@ -17,6 +17,22 @@ if (! function_exists('array_compress')) {
     }
 }
 
+if (! function_exists('array_to_string')) {
+    /**
+     * Makes a string from array by concatenating each key with it value and subsequent concatenation
+     * the resulted string with each other
+     *
+     * @param array $arr
+     * @param string $kvsep Key and value separator ($key1$kvsep$value1)
+     * @param string $psep Key-Value pairs separator ($key1$kvsep$value1$psep$key2$kvsep$value2$psep...)
+     * @return string
+     */
+    function array_to_string(array $arr, $kvsep, $psep)
+    {
+        return Arr::toString($arr, $kvsep, $psep);
+    }
+}
+
 if (! function_exists('array_has_object_with_key_and_value')) {
     /**
      * Looks for an array inside input array by key and value
