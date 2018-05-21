@@ -72,12 +72,12 @@ class Arr extends \Illuminate\Support\Arr
      */
     public static function index($arr, $index)
     {
-        if (is_array($arr) == FALSE) {
+        if (is_array($arr) == false) {
             return $arr;
         }
 
         if (count($arr) == 0) {
-            return NULL;
+            return null;
         }
 
         if (array_key_exists($index, $arr)) {
@@ -90,7 +90,7 @@ class Arr extends \Illuminate\Support\Arr
             return $values[$index];
         }
         
-        return NULL;
+        return null;
     }
     
     public static function max($arr, $key)
@@ -140,12 +140,25 @@ class Arr extends \Illuminate\Support\Arr
      */
     public static function hasObjectWithKeyAndValue(array $array, $key, $value)
     {
+        return self::getObjectWithKeyAndValue($array, $key, $value) !== null;
+    }
+
+    /**
+     * Looks for an array inside input array by key and value and returns one if found
+     *
+     * @param array $array
+     * @param $key
+     * @param $value
+     * @return array
+     */
+    public static function getObjectWithKeyAndValue(array $array, $key, $value)
+    {
         foreach ($array as $object) {
             if (is_array($object) && array_key_exists($key, $object) && $object[$key] === $value) {
-                return true;
+                return $object;
             }
         }
 
-        return false;
+        return null;
     }
 }

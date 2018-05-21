@@ -5,7 +5,7 @@
     "keywords": ["http_build_url"],
     "authors": [
         {
-            "name": "Mikhail Mingaev",
+            "name": "Mikhail Mingalev",
             "email": "mingalevme@gmail.com"
         }
     ],
@@ -13,22 +13,19 @@
         "php" : ">=5.4.0",
         "ext-mbstring": "*",
         "illuminate/support": "*",
-        "symfony/process": "*"
+        "symfony/process": "*",
+        "mingalevme/phputils-url": "^1.0"
     },
     "require-dev": {
         "phpunit/phpunit": "~6.0"
     },
     "autoload": {
-        "psr-4": {
-            "Mingalevme\\Utils\\": "src"
-        },
+        "classmap": ["src/"],
         "files": [
             "src/helpers.php"
         ]
     },
     "autoload-dev": {
-        "psr-4": {
-            "Mingalevme\\Tests\\Utils": "tests/"
-        }
+        "classmap": ["tests/"]
     }
 }
