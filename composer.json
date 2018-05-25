@@ -26,8 +26,5 @@
     },
     "autoload-dev": {
         "classmap": ["tests/"]
-    },
-    "suggest": {
-        "symfony/process": "Required for Mingalevme\\Utils\\Filesystem"
     }
 }

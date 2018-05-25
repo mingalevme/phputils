@@ -55,7 +55,7 @@ class JsonTest extends TestCase
         $str = \iconv('UTF8', 'CP1251', 'Тест');
         
         try {
-            dd(J::d("[\"{$str}\"]"));
+            J::d("[\"{$str}\"]");
             $this->fail(ParseException::class . ' should have been raised');
         } catch (ParseException $e) {
             $this->assertSame('Malformed UTF-8 characters, possibly incorrectly encoded', $e->getMessage());

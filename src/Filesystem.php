@@ -2,14 +2,8 @@
 
 namespace Mingalevme\Utils;
 
-use Symfony\Component\Process\Process;
-use Symfony\Component\Process\Exception\ProcessFailedException;
-
 class Filesystem
 {
-    const FIT_DIR_INTO_SIZE_DIR_SIZE_COUNTING_TIMEOUT = 'fitDirIntoSizeDirSizeCountingTimeout';
-    const FIT_DIR_INTO_SIZE_GET_NEXT_FILES_EXECUTION_TIMEOUT = 'fitDirIntoSizeGetNextFilesExecutionTimeout';
-    
     /**
      *
      * @var \Psr\Log\LoggerInterface
@@ -27,14 +21,32 @@ class Filesystem
      * @param string $pathname
      * @param int $mode
      * @param resource $context
+     * @throws \ErrorException
      * @return bool <b>true</b> on success or <b>false</b> on failure.
      */
     public static function mkdir($pathname, $mode = 0777, $context = null)
     {
+        if (\file_exists($pathname)) {
+            return true;
+        }
+
+        $result = null;
+
         try {
-            return $context ? \mkdir($pathname, $mode, true, $context) : \mkdir($pathname, $mode, true);
+            $result = $context
+                ? @\mkdir($pathname, $mode, true, $context)
+                : @\mkdir($pathname, $mode, true);
         } catch (\ErrorException $e) {
             \clearstatcache(true, $pathname);
+        }
+
+        if ($result) {
+            return $result;
+        }
+
+        if ($result === false) {
+            $error = error_get_last();
+            $e = new \ErrorException($error['message'], 0, $error['type'], $error['file'], $error['line']);
         }
 
         if (\strpos(\strtolower($e->getMessage()), 'file exists') !== false) {
@@ -64,7 +76,7 @@ class Filesystem
         
         foreach ($files as $file) {
             $subpath = "${pathname}/${file}";
-            \is_dir($subpath) ? static::rmdir($subpath) : \unlink($subpath);
+            \is_dir($subpath) ? static::rmdir($subpath) : static::unlink($subpath);
         }
         
         return \rmdir($pathname);
@@ -79,12 +91,27 @@ class Filesystem
      */
     public static function unlink($pathname, $context = null)
     {
+        $result = null;
+
         try {
-            return $context ? \unlink($pathname, $context) : \unlink($pathname);
+            $result = $context
+                ? @\unlink($pathname, $context)
+                : @\unlink($pathname);
         } catch (\ErrorException $e) {
-            if (\strpos(strtolower($e->getMessage()), 'no such file or directory') !== false) {
-                return true;
-            }
+            // pass
+        }
+
+        if ($result) {
+            return true;
+        }
+
+        if (!\file_exists($pathname)) {
+            return true;
+        }
+
+        if ($result === false) {
+            $error = error_get_last();
+            $e = new \ErrorException($error['message'], 0, $error['type'], $error['file'], $error['line']);
         }
 
         throw $e;
@@ -179,109 +206,5 @@ class Filesystem
         }
         
         return $size; 
-    }
-
-    /**
-     * Truncate directory to specified size in bytes by step-by-step deleting last accessed files.
-     * Works only on *nix systrems.
-     * 
-     * @param string $pathname
-     * @param int $size
-     * @param array $options
-     * @return boolean
-     */
-    public static function fitDirIntoSize($pathname, $size, $options = [])
-    {
-        $dirSizeCountingTimeout = isset($options[self::FIT_DIR_INTO_SIZE_DIR_SIZE_COUNTING_TIMEOUT])
-            ? $options[self::FIT_DIR_INTO_SIZE_DIR_SIZE_COUNTING_TIMEOUT]
-            : null;
-        
-        $currentSize = \intval(static::runConsoleCommand("du -sb {$pathname}", null, null, null, $dirSizeCountingTimeout));
-        
-        if ($currentSize < $size) {
-            return true;
-        }
-
-        $getNextFilesExecutionTimeout = isset($options[self::FIT_DIR_INTO_SIZE_GET_NEXT_FILES_EXECUTION_TIMEOUT])
-            ? $options[self::FIT_DIR_INTO_SIZE_GET_NEXT_FILES_EXECUTION_TIMEOUT]
-            : null;
-        
-        while (count($data = static::getNextFilesForFitDirIntoSize($pathname, null, null, null, $getNextFilesExecutionTimeout)) > 0) {
-            foreach ($data as $fileData) {
-                list($_, $filesize, $filename) = \explode(' ', $fileData, 3);
-                
-                $e = null;
-                
-                try {
-                    \unlink($filename);
-                } catch (\ErrorException $e) {
-                    if (self::$logger) {
-                        $errmsg = \sprintf('(%s) Error while deleting file: %s', static::class, $e->getMessage());
-                        self::$logger->error($errmsg, [
-                            'filename' => $filename,
-                        ]);
-                    }
-                }
-                
-                if ($e) {
-                    $currentSize = \intval(static::runConsoleCommand("du -sb {$pathname}"));
-                } else {
-                    $currentSize = $currentSize - (int) $filesize;
-                }
-                
-                if ($currentSize < $size) {
-                    return true;
-                }
-            }
-        }
-        
-        return false;
-    }
-    
-    /**
-     * 
-     * @param string         $pathname    The directory path
-     * @param string|null    $cwd         The working directory or null to use the working dir of the current PHP process
-     * @param array|null     $env         The environment variables or null to use the same environment as the current PHP process
-     * @param string|null    $input       The input
-     * @param int|float|null $timeout     The timeout in seconds or null to disable
-     * @param array          $options     An array of options for proc_open
-     * @return string
-     */
-    protected static function getNextFilesForFitDirIntoSize($pathname, $cwd = null, $env = null, $input = null, $timeout = 60, $options = [])
-    {
-        $output = static::runConsoleCommand("find {$pathname} -type f -printf \"%T@ %s %p\n\" | sort -n | head -n1000", $cwd, $env, $input, $timeout, $options);
-        $data = \explode(\PHP_EOL, $output);
-        unset($data[count($data) - 1]);
-        return $data;
-    }
-
-    /**
-     * Run command line via \Symfony\Component\Process\Process
-     *
-     * @param string         $commandline The command line to run
-     * @param string|null    $cwd         The working directory or null to use the working dir of the current PHP process
-     * @param array|null     $env         The environment variables or null to use the same environment as the current PHP process
-     * @param string|null    $input       The input
-     * @param int|float|null $timeout     The timeout in seconds or null to disable
-     * @param array          $options     An array of options for proc_open
-     *
-     * @throws RuntimeException When proc_open is not installed
-     *
-     * @return string
-     */
-    protected static function runConsoleCommand($commandline, $cwd = null, array $env = null, $input = null, $timeout = 60, array $options = array())
-    {
-        $process = new Process($commandline, $cwd, $env, $input, $timeout, $options);
-        
-        $process->run();
-        
-        if ($process->isSuccessful() === false) {
-            throw new ProcessFailedException($process);
-        }
-        
-        $output = $process->getOutput();
-        
-        return $output;
     }
 }
