@@ -10,17 +10,19 @@ trait Contextable
     protected $contextable;
 
     /**
+     * @param array $extra
      * @return string
      */
-    protected function getContext(array $extra = [])
+    protected function getContext($extra = [])
     {
         return jsone($this->getRawContext($extra));
     }
     
     /**
+     * @param array $extra
      * @return array
      */
-    protected function getRawContext(array $extra = [])
+    protected function getRawContext($extra = [])
     {
         if ($this->contextable) {
             $data = [];

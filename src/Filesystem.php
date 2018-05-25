@@ -29,7 +29,7 @@ class Filesystem
      * @param resource $context
      * @return bool <b>true</b> on success or <b>false</b> on failure.
      */
-    public static function mkdir($pathname, $mode = 0777, resource $context = null)
+    public static function mkdir($pathname, $mode = 0777, $context = null)
     {
         try {
             return $context ? \mkdir($pathname, $mode, true, $context) : \mkdir($pathname, $mode, true);
@@ -54,7 +54,7 @@ class Filesystem
      * @param string $pathname
      * @return boolean
      */
-    public static function rmdir(string $pathname)
+    public static function rmdir($pathname)
     {
         if (\is_dir($pathname) === false) {
             return false;
@@ -77,7 +77,7 @@ class Filesystem
      * @return bool Returns TRUE on success or FALSE on failure.
      * @throws \ErrorException
      */
-    public static function unlink(string $pathname, $context = null)
+    public static function unlink($pathname, $context = null)
     {
         try {
             return $context ? \unlink($pathname, $context) : \unlink($pathname);
@@ -187,19 +187,24 @@ class Filesystem
      * 
      * @param string $pathname
      * @param int $size
+     * @param array $options
      * @return boolean
      */
-    public static function fitDirIntoSize(string $pathname, int $size, array $options = [])
+    public static function fitDirIntoSize($pathname, $size, $options = [])
     {
-        $dirSizeCountingTimeout = \array_get($options, self::FIT_DIR_INTO_SIZE_DIR_SIZE_COUNTING_TIMEOUT);
+        $dirSizeCountingTimeout = isset($options[self::FIT_DIR_INTO_SIZE_DIR_SIZE_COUNTING_TIMEOUT])
+            ? $options[self::FIT_DIR_INTO_SIZE_DIR_SIZE_COUNTING_TIMEOUT]
+            : null;
         
         $currentSize = \intval(static::runConsoleCommand("du -sb {$pathname}", null, null, null, $dirSizeCountingTimeout));
         
         if ($currentSize < $size) {
             return true;
         }
-        
-        $getNextFilesExecutionTimeout = \array_get($options, self::FIT_DIR_INTO_SIZE_GET_NEXT_FILES_EXECUTION_TIMEOUT);
+
+        $getNextFilesExecutionTimeout = isset($options[self::FIT_DIR_INTO_SIZE_GET_NEXT_FILES_EXECUTION_TIMEOUT])
+            ? $options[self::FIT_DIR_INTO_SIZE_GET_NEXT_FILES_EXECUTION_TIMEOUT]
+            : null;
         
         while (count($data = static::getNextFilesForFitDirIntoSize($pathname, null, null, null, $getNextFilesExecutionTimeout)) > 0) {
             foreach ($data as $fileData) {
@@ -243,7 +248,7 @@ class Filesystem
      * @param array          $options     An array of options for proc_open
      * @return string
      */
-    protected static function getNextFilesForFitDirIntoSize(string $pathname, $cwd = null, array $env = null, $input = null, $timeout = 60, array $options = array())
+    protected static function getNextFilesForFitDirIntoSize($pathname, $cwd = null, $env = null, $input = null, $timeout = 60, $options = [])
     {
         $output = static::runConsoleCommand("find {$pathname} -type f -printf \"%T@ %s %p\n\" | sort -n | head -n1000", $cwd, $env, $input, $timeout, $options);
         $data = \explode(\PHP_EOL, $output);
@@ -262,6 +267,8 @@ class Filesystem
      * @param array          $options     An array of options for proc_open
      *
      * @throws RuntimeException When proc_open is not installed
+     *
+     * @return string
      */
     protected static function runConsoleCommand($commandline, $cwd = null, array $env = null, $input = null, $timeout = 60, array $options = array())
     {

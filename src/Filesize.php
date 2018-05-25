@@ -26,7 +26,7 @@ class Filesize
      * @param bool $useBinaryPrefix Use powers-of-two (1024) instead of powers-of-ten (1000), default is <b>false</b>
      * @return string Human readable size
      */
-    public static function humanize($size, int $precision = 2, bool $useBinaryPrefix = false)
+    public static function humanize($size, $precision = 2, $useBinaryPrefix = false)
     {
         $base = $useBinaryPrefix ? 1024 : 1000;
         $limit = array_values(self::UNIT_PREFIXES_POWERS)[count(self::UNIT_PREFIXES_POWERS) - 1];
@@ -46,7 +46,7 @@ class Filesize
      * @return int Size in bytes
      * @throws Exception
      */
-    public static function dehumanize(string $size)
+    public static function dehumanize($size)
     {
         if (preg_match('/\d+\.\d+B/', $size)) {
             throw new Exception("Invalid size format or unknown/unsupported units");

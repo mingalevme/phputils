@@ -29,8 +29,8 @@ class Base64Url
     /**
      * Decode a string encoded with base64url algorithm
      * 
-     * @param type $str
-     * @return type
+     * @param string $str
+     * @return string
      */
     public static function decode($str)
     {
