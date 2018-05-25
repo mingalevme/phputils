@@ -4,63 +4,6 @@ use Mingalevme\Utils\Url;
 use Mingalevme\Utils\Arr;
 use Mingalevme\Utils\Json;
 
-if (! function_exists('array_compress')) {
-    /**
-     * Recursivly remove all falsy values from array
-     *
-     * @param  array $array
-     * @return array
-     */
-    function array_compress(array $array)
-    {
-        return Arr::compress($array);
-    }
-}
-
-if (! function_exists('array_to_string')) {
-    /**
-     * Makes a string from array by concatenating each key with it value and subsequent concatenation
-     * the resulted string with each other
-     *
-     * @param array $arr
-     * @param string $kvsep Key and value separator ($key1$kvsep$value1)
-     * @param string $psep Key-Value pairs separator ($key1$kvsep$value1$psep$key2$kvsep$value2$psep...)
-     * @return string
-     */
-    function array_to_string(array $arr, $kvsep, $psep)
-    {
-        return Arr::toString($arr, $kvsep, $psep);
-    }
-}
-
-if (! function_exists('array_has_object_with_key_and_value')) {
-    /**
-     * Looks for an array inside input array by key and value
-     *
-     * @param array $array
-     * @param string $key
-     * @param string $value
-     * @return bool
-     */
-    function array_has_object_with_key_and_value(array $array, string $key, string $value)
-    {
-        return Arr::hasObjectWithKeyAndValue($array, $key, $value);
-    }
-}
-
-if (! function_exists('build_url')) {
-    /**
-     * \Mingalevme\Utils\Url::build function alias
-     *
-     * @param  string $json
-     * @return mixed
-     */
-    function build_url($url, $parts=[], &$new_url = false)
-    {
-        return Url::build($url, $parts, $new_url);
-    }
-}
-
 if (! function_exists('jsone')) {
     /**
      * \Mingalevme\Utils\Json::encode function alias

@@ -2,7 +2,7 @@
     "name": "mingalevme/utils",
     "description": "Some helpers to make your life easier",
     "license": "MIT",
-    "keywords": ["http_build_url"],
+    "keywords": ["http_build_url", "php", "utils"],
     "authors": [
         {
             "name": "Mikhail Mingalev",
@@ -11,10 +11,9 @@
     ],
     "require": {
         "php" : ">=5.4.0",
-        "ext-mbstring": "*",
-        "illuminate/support": "*",
-        "symfony/process": "*",
-        "mingalevme/utils-url": "^1.0"
+        "mingalevme/utils-url": "^1.0",
+        "mingalevme/utils-arr": "^1.0",
+        "psr/log": "^1.0"
     },
     "require-dev": {
         "phpunit/phpunit": "~6.0"
@@ -27,5 +26,8 @@
     },
     "autoload-dev": {
         "classmap": ["tests/"]
+    },
+    "suggest": {
+        "symfony/process": "Required for Mingalevme\\Utils\\Filesystem"
     }
 }

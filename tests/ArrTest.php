@@ -6,24 +6,12 @@ use Mingalevme\Utils\Arr;
 
 class ArrTest extends TestCase
 {
-    public function testHasObjectWithKeyAndValue()
+    /**
+     * Just integration testing, for unit tests
+     * @see https://github.com/mingalevme/phputils-arr/blob/master/tests/ArrTest.php
+     */
+    public function testUrlIntegration()
     {
-        $input = [
-            [
-                'foo1' => 'bar1',
-                'bar1' => 'foo1',
-            ],
-            [
-                'foo2' => 'bar2',
-                'bar2' => 'foo2',
-            ],
-            [
-                'foo3' => 'bar3',
-                'bar3' => 'foo3',
-            ],
-        ];
-
-        $this->assertTrue(Arr::hasObjectWithKeyAndValue($input, 'bar2', 'foo2'));
-        $this->assertFalse(Arr::hasObjectWithKeyAndValue($input, 'bar4', 'foo4'));
+        $this->assertSame('Mingalevme\Utils\Arr', Arr::class);
     }
 }
