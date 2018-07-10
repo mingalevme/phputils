@@ -106,18 +106,20 @@ class Xml extends \SimpleXMLElement
     {
         return preg_replace('/>[\n\s\r]+?</', '><', $this->asXML());
     }
-    
+
     /**
      * Get element child as string
      *
-     * @param \SimpleXMLElement $el
+     * @param \SimpleXMLElement $child
      * @return string
      */
-    public function getValue(string $child = null)
+    public function getValue($child = null)
     {
         if (isset($this)) {
-            if ($child && isset($this->{$child})) {
-                return trim($this->{$child});
+            if ($child) {
+                if (isset($this->{$child})) {
+                    return trim($this->{$child});
+                }
             } else {
                 return trim($this);
             }
@@ -141,5 +143,15 @@ class Xml extends \SimpleXMLElement
         } else {
             return $xml;
         }
+    }
+
+    /**
+     * @return \SimpleXMLElement[]
+     */
+    public function getParent()
+    {
+        return ($elements = $this->xpath(".."))
+            ? $elements[0]
+            : null;
     }
 }
