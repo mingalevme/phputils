@@ -24,7 +24,7 @@ trait Contextable
      */
     protected function getRawContext(...$extras)
     {
-        if ($this->contextable != null) {
+        if ($this->contextable !== null) {
             $data = [];
             foreach ($this->contextable as $property) {
                 $data[$property] = $this->{$property};
