@@ -10,21 +10,21 @@ trait Contextable
     protected $contextable;
 
     /**
-     * @param array $extra
+     * @param array[] $extras
      * @return string
      */
-    protected function getContext($extra = [])
+    protected function getContext(...$extras)
     {
-        return jsone($this->getRawContext($extra));
+        return jsone($this->getRawContext(...$extras));
     }
     
     /**
      * @param array $extra
      * @return array
      */
-    protected function getRawContext($extra = [])
+    protected function getRawContext(...$extras)
     {
-        if ($this->contextable) {
+        if ($this->contextable != null) {
             $data = [];
             foreach ($this->contextable as $property) {
                 $data[$property] = $this->{$property};
@@ -34,6 +34,6 @@ trait Contextable
             unset($data['contextable']);
         }
         
-        return array_compress(array_merge($data, $extra));
+        return array_compress(array_merge($data, ...$extras));
     }
 }

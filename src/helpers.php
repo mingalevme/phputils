@@ -3,6 +3,7 @@
 use Mingalevme\Utils\Url;
 use Mingalevme\Utils\Arr;
 use Mingalevme\Utils\Json;
+use Mingalevme\Utils\Json\Exception\ParseException;
 
 if (! function_exists('jsone')) {
     /**
@@ -23,6 +24,7 @@ if (! function_exists('jsond')) {
      *
      * @param  string $json
      * @return mixed
+     * @throws ParseException
      */
     function jsond($json)
     {
@@ -85,8 +87,13 @@ if (! function_exists('url_get_contents')) {
         if (isset($exception)) {
             throw $exception;
         }
-        
-        throw new \ErrorException("url_get_contents(...): failed to open stream: HTTP request failed! {$statusLine}");
+
+        throw new \ErrorException(sprintf('url_get_contents(%s): failed to open stream: HTTP request failed! %s',
+            strlen($url) > 100
+                ? substr($url, 0, 100) . '...'
+                : $url,
+            $statusLine
+        ));
     }
 }
 

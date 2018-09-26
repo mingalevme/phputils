@@ -34,6 +34,7 @@ class Json
      * 
      * @param string $json
      * @return mixed
+     * @throws ParseException in case of error
      */
     public static function decode($json, $assoc=true)
     {
@@ -75,6 +76,7 @@ class Json
      * 
      * @param type $data
      * @return type
+     * @throws ParseException
      */
     public static function d($data, $assoc=true)
     {
