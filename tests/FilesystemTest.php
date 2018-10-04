@@ -9,15 +9,15 @@ class FilesystemTest extends TestCase
 {
     const FIT_DIR_INTO_SIZE_MIN_FILESIZE = 10240;
     const FIT_DIR_INTO_SIZE_MIN_MAX_FILESIZE = 102400;
-    
+
     const FIT_DIR_INTO_SIZE_MIN_MIN_FILES_COUNT = 10;
     const FIT_DIR_INTO_SIZE_MIN_MAX_FILES_COUNT = 30;
-    
+
     protected static $umask;
     protected static $fitDirIntoSizeDir;
-    
+
     protected static $DR;
-    
+
     public static function setUpBeforeClass()
     {
         $DR = \DIRECTORY_SEPARATOR;
@@ -32,13 +32,13 @@ class FilesystemTest extends TestCase
     public function testMkdirAndRmdir($dirs)
     {
         $DR = \DIRECTORY_SEPARATOR;
-        
+
         $pathname = sys_get_temp_dir() . $DR . implode($DR, $dirs);
-        
+
         Filesystem::mkdir($pathname, 0775);
 
         $this->assertTrue(is_dir($pathname), 'Directory has not been created');
-        
+
         Filesystem::mkdir($pathname, 0775); // Cheking creating of existing directory
 
         Filesystem::rmdir(sys_get_temp_dir() . $DR . $dirs[0]);
@@ -60,17 +60,66 @@ class FilesystemTest extends TestCase
         ];
     }
 
-    public function testMkdirOnExistingDir()
+    public function testMkdirOnExistingDirWithoutErrorException()
     {
         $dirname = implode(\DIRECTORY_SEPARATOR, [sys_get_temp_dir(), '_mingalevme-utils', 'existing-dir']);
-        
+
         Filesystem::mkdir($dirname);
-        
+
         $this->assertDirectoryExists($dirname);
-        
+
         $this->assertTrue(Filesystem::mkdir($dirname));
     }
-    
+
+    public function testMkdirOnExistingDirWithErrorException()
+    {
+        set_error_handler(function($type, $message, $file, $line){
+            throw new \ErrorException($message, 0, $type, $file, $line);
+        });
+
+        $dirname = implode(\DIRECTORY_SEPARATOR, [sys_get_temp_dir(), '_mingalevme-utils', 'existing-dir']);
+
+        Filesystem::mkdir($dirname);
+
+        $this->assertDirectoryExists($dirname);
+
+        $this->assertTrue(Filesystem::mkdir($dirname));
+    }
+
+    public function testUnlinkWithoutErrorException()
+    {
+        $filename = sys_get_temp_dir() . '/_mingalevme-test';
+
+        touch($filename);
+
+        $this->assertFileExists($filename);
+
+        Filesystem::unlink($filename);
+
+        $this->assertFileNotExists($filename);
+
+        $this->assertTrue(Filesystem::unlink($filename));
+    }
+
+    public function testUnlinkWithErrorException()
+    {
+        set_error_handler(function($type, $message, $file, $line){
+            throw new \ErrorException($message, 0, $type, $file, $line);
+        });
+
+        $filename = sys_get_temp_dir() . '/_mingalevme-test';
+
+        touch($filename);
+
+        $this->assertFileExists($filename);
+
+        Filesystem::unlink($filename);
+
+        $this->assertFileNotExists($filename);
+
+        $this->assertTrue(Filesystem::unlink($filename));
+    }
+
     public function testDirsize()
     {
         Filesystem::rmdir(self::$fitDirIntoSizeDir);
@@ -78,7 +127,7 @@ class FilesystemTest extends TestCase
         $actual = Filesystem::dirsize(self::$fitDirIntoSizeDir);
         $this->assertEquals($expected, $actual);
     }
-    
+
     /*public function testFitDirIntoSize()
     {
         $currentSize = $this->fillup();
@@ -88,39 +137,39 @@ class FilesystemTest extends TestCase
         $actual = Filesystem::dirsize(self::$fitDirIntoSizeDir);
         $this->assertLessThanOrEqual($expected, $actual);
     }*/
-    
+
     public function testChmod()
     {
         $this->fillup();
         Filesystem::chmod(self::$fitDirIntoSizeDir, 0777);
         $this->addToAssertionCount(1);
     }
-    
+
     protected function fillup()
     {
         $DR = \DIRECTORY_SEPARATOR;
-        
+
         $total = 0;
-        
+
         foreach (range(self::FIT_DIR_INTO_SIZE_MIN_MIN_FILES_COUNT, self::FIT_DIR_INTO_SIZE_MIN_MAX_FILES_COUNT) as $i) {
             $dir = implode($DR, [
                 self::$fitDirIntoSizeDir,
                 Str::random(3),
                 Str::random(5),
             ]);
-            
+
             Filesystem::mkdir($dir, 0775);
-            
+
             $filename = $dir . $DR . "tmp-{$i}";
-            
+
             $length = rand(self::FIT_DIR_INTO_SIZE_MIN_FILESIZE, self::FIT_DIR_INTO_SIZE_MIN_MAX_FILESIZE);
-            
+
             file_put_contents($filename, str_repeat('A', $length));
 
             //$total += $length;
             $total += filesize($filename);
         }
-        
+
         return $total;
     }
 

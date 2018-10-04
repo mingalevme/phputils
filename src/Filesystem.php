@@ -26,7 +26,7 @@ class Filesystem
      */
     public static function mkdir($pathname, $mode = 0777, $context = null)
     {
-        if (\file_exists($pathname)) {
+        if (file_exists($pathname)) {
             return true;
         }
 
@@ -34,29 +34,31 @@ class Filesystem
 
         try {
             $result = $context
-                ? @\mkdir($pathname, $mode, true, $context)
-                : @\mkdir($pathname, $mode, true);
+                ? @mkdir($pathname, $mode, true, $context)
+                : @mkdir($pathname, $mode, true);
         } catch (\ErrorException $e) {
-            \clearstatcache(true, $pathname);
+            // pass
         }
 
         if ($result) {
             return $result;
-        }
-
-        if ($result === false) {
+        } elseif (isset($e)) {
+            // pass
+        } else {
             $error = error_get_last();
             $e = new \ErrorException($error['message'], 0, $error['type'], $error['file'], $error['line']);
         }
 
-        if (\strpos(\strtolower($e->getMessage()), 'file exists') !== false) {
+        if (strpos(strtolower($e->getMessage()), 'file exists') !== false) {
             return true;
         }
 
-        if (\file_exists($pathname)) {
+        clearstatcache(true, $pathname);
+
+        if (file_exists($pathname)) {
             return true;
         }
-        
+
         throw $e;
     }
     
@@ -65,27 +67,29 @@ class Filesystem
      * 
      * @param string $pathname
      * @return boolean
+     * @throws \ErrorException
      */
     public static function rmdir($pathname)
     {
-        if (\is_dir($pathname) === false) {
+        if (is_dir($pathname) === false) {
             return false;
         }
         
-        $files = \array_diff(scandir($pathname), ['.', '..']);
+        $files = array_diff(scandir($pathname), ['.', '..']);
         
         foreach ($files as $file) {
             $subpath = "${pathname}/${file}";
-            \is_dir($subpath) ? static::rmdir($subpath) : static::unlink($subpath);
+            is_dir($subpath) ? static::rmdir($subpath) : static::unlink($subpath);
         }
         
-        return \rmdir($pathname);
+        return rmdir($pathname);
     }
 
     /**
      * Safely remove file
      *
      * @param string $pathname Path to the file
+     * @param resource $context Context
      * @return bool Returns TRUE on success or FALSE on failure.
      * @throws \ErrorException
      */
@@ -95,23 +99,29 @@ class Filesystem
 
         try {
             $result = $context
-                ? @\unlink($pathname, $context)
-                : @\unlink($pathname);
+                ? @unlink($pathname, $context)
+                : @unlink($pathname);
         } catch (\ErrorException $e) {
             // pass
         }
 
         if ($result) {
             return true;
+        } elseif (isset($e)) {
+            // pass
+        } else {
+            $error = error_get_last();
+            $e = new \ErrorException($error['message'], 0, $error['type'], $error['file'], $error['line']);
         }
 
-        if (!\file_exists($pathname)) {
+        if (strpos(strtolower($e->getMessage()), 'no such file or directory') !== false) {
             return true;
         }
 
-        if ($result === false) {
-            $error = error_get_last();
-            $e = new \ErrorException($error['message'], 0, $error['type'], $error['file'], $error['line']);
+        clearstatcache(true, $pathname);
+
+        if (!file_exists($pathname)) {
+            return true;
         }
 
         throw $e;
