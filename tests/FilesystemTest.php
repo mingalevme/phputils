@@ -74,7 +74,7 @@ class FilesystemTest extends TestCase
     public function testMkdirOnExistingDirWithErrorException()
     {
         set_error_handler(function($type, $message, $file, $line){
-            throw new \ErrorException($message, 0, $type, $file, $line);
+            var_dump(func_get_args());
         });
 
         $dirname = implode(\DIRECTORY_SEPARATOR, [sys_get_temp_dir(), '_mingalevme-utils', 'existing-dir']);
@@ -104,7 +104,7 @@ class FilesystemTest extends TestCase
     public function testUnlinkWithErrorException()
     {
         set_error_handler(function($type, $message, $file, $line){
-            throw new \ErrorException($message, 0, $type, $file, $line);
+            var_dump(func_get_args());
         });
 
         $filename = sys_get_temp_dir() . '/_mingalevme-test';

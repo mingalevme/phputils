@@ -22,7 +22,7 @@ class Filesystem
      * @param int $mode
      * @param resource $context
      * @throws \ErrorException
-     * @return bool <b>true</b> on success or <b>false</b> on failure.
+     * @return bool <b>true</b> on success or raise \ErrorException on failure.
      */
     public static function mkdir($pathname, $mode = 0777, $context = null)
     {
@@ -32,22 +32,17 @@ class Filesystem
 
         $result = null;
 
+        ErrorHandler::set();
+
         try {
-            $result = $context
-                ? @mkdir($pathname, $mode, true, $context)
-                : @mkdir($pathname, $mode, true);
+            return $context
+                ? mkdir($pathname, $mode, true, $context)
+                : mkdir($pathname, $mode, true);
         } catch (\ErrorException $e) {
-            // pass
+            // (!) restore_error_handler()
         }
 
-        if ($result) {
-            return $result;
-        } elseif (isset($e)) {
-            // pass
-        } else {
-            $error = error_get_last();
-            $e = new \ErrorException($error['message'], 0, $error['type'], $error['file'], $error['line']);
-        }
+        ErrorHandler::reset();
 
         if (strpos(strtolower($e->getMessage()), 'file exists') !== false) {
             return true;
@@ -90,29 +85,24 @@ class Filesystem
      *
      * @param string $pathname Path to the file
      * @param resource $context Context
-     * @return bool Returns TRUE on success or FALSE on failure.
+     * @return bool Returns TRUE on success or raise \ErrorException on failure.
      * @throws \ErrorException
      */
     public static function unlink($pathname, $context = null)
     {
         $result = null;
 
+        ErrorHandler::set();
+
         try {
-            $result = $context
-                ? @unlink($pathname, $context)
-                : @unlink($pathname);
+            return $context
+                ? unlink($pathname, $context)
+                : unlink($pathname);
         } catch (\ErrorException $e) {
-            // pass
+            // (!) restore_error_handler()
         }
 
-        if ($result) {
-            return true;
-        } elseif (isset($e)) {
-            // pass
-        } else {
-            $error = error_get_last();
-            $e = new \ErrorException($error['message'], 0, $error['type'], $error['file'], $error['line']);
-        }
+        ErrorHandler::reset();
 
         if (strpos(strtolower($e->getMessage()), 'no such file or directory') !== false) {
             return true;
