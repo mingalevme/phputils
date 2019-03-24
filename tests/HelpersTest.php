@@ -44,4 +44,22 @@ class HelpersTest extends TestCase
         
         $this->assertSame('url_get_contents/1/404/404: Not Found', $responseBody);
     }
+
+    public function testIsOddNumber()
+    {
+        $this->assertSame(false, is_odd_number(-2));
+        $this->assertSame(true, is_odd_number(-1));
+        $this->assertSame(false, is_odd_number(0));
+        $this->assertSame(true, is_odd_number(1));
+        $this->assertSame(false, is_odd_number(2));
+    }
+
+    public function testIsEvenNumber()
+    {
+        $this->assertSame(true, is_even_number(-2));
+        $this->assertSame(false, is_even_number(-1));
+        $this->assertSame(true, is_even_number(0));
+        $this->assertSame(false, is_even_number(1));
+        $this->assertSame(true, is_even_number(2));
+    }
 }

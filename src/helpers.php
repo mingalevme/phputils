@@ -165,3 +165,15 @@ if (! function_exists('trytrytry')) {
 
     }
 }
+
+if (! function_exists('is_odd_number')) {
+    function is_odd_number($number) {
+        return boolval($number & 1);
+    }
+}
+
+if (! function_exists('is_even_number')) {
+    function is_even_number($number) {
+        return !is_odd_number($number);
+    }
+}
