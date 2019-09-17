@@ -35,8 +35,8 @@ class Xml extends \SimpleXMLElement
     /**
      * Make UTF-8 XML string safe
      * 
-     * @param type $xml
-     * @return type
+     * @param string $xml
+     * @return string
      */
     public static function safeize($xml)
     {
@@ -56,7 +56,7 @@ class Xml extends \SimpleXMLElement
 
     public function addAttribute($name, $value = null, $namespace = null)
     {
-        return parent::addAttribute($name, $value ? htmlspecialchars($value) : $value, $namespace);
+        parent::addAttribute($name, $value ? htmlspecialchars($value) : $value, $namespace);
     }
     
     /**
@@ -66,7 +66,7 @@ class Xml extends \SimpleXMLElement
      * @param string $default Default value if element or attribute doesn't exist
      * @return string
      */
-    public function getAttr(string $attr, string $default=null)
+    public function getAttr($attr, $default=null)
     {
         if (isset($this) === false) {
             return $default;

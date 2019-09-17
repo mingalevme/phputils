@@ -7,11 +7,10 @@ use Mingalevme\Utils\Json\Exception\ParseException;
 class Json
 {
     /**
-     * Encode data to JSON with options:
-     * \JSON_UNESCAPED_SLASHES
-     * \JSON_UNESCAPED_UNICODE
+     * Encode data to JSON with \JSON_UNESCAPED_SLASHES and \JSON_UNESCAPED_UNICODE
      * 
      * @param mixed $data
+     * @return string
      */
     public static function encode($data)
     {
@@ -21,8 +20,8 @@ class Json
     /**
      * Alias to encode
      * 
-     * @param type $data
-     * @return type
+     * @param mixed $data
+     * @return string
      */
     public static function e($data)
     {
@@ -33,6 +32,7 @@ class Json
      * Decode JSON to assoc (by default) data
      * 
      * @param string $json
+     * @param bool $assoc
      * @return mixed
      * @throws ParseException in case of error
      */
@@ -74,8 +74,9 @@ class Json
     /**
      * Alias to decode
      * 
-     * @param type $data
-     * @return type
+     * @param string $data
+     * @param bool $assoc
+     * @return mixed
      * @throws ParseException
      */
     public static function d($data, $assoc=true)

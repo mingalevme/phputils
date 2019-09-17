@@ -72,8 +72,9 @@ class Str
     /**
      * Generate a safe random string
      * 
-     * @param type $length
-     * @return type
+     * @param int $length
+     * @return string
+     * @throws \Exception if it was not possible to gather sufficient entropy.
      */
     public static function random($length)
     {
@@ -87,14 +88,16 @@ class Str
             $str = \str_shuffle(\substr(\str_repeat(\md5(\mt_rand()), 2 + $length/32), 0, $length));
         }
         
-        return \strlen($str) > $length ? substr($str, 0, $length) : $str;
+        return \strlen($str) > $length
+            ? substr($str, 0, $length)
+            : $str;
     }
     
     /**
      * Transform string from camelCase to snake_case
      * 
      * @param string $str
-     * @return type
+     * @return string
      */
     public static function snakeize($str, $mode = self::LOWER)
     {
@@ -108,7 +111,7 @@ class Str
      * Transform string from snake_case to camelCase
      * 
      * @param string $str
-     * @return type
+     * @return string
      */
     public static function camelize($str, $mode = self::LOWER)
     {

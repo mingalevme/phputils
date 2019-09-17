@@ -26,5 +26,8 @@
     },
     "autoload-dev": {
         "classmap": ["tests/"]
+    },
+    "suggest": {
+        "ext-libxml": "...",
     }
 }
