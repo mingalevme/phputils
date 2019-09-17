@@ -5,11 +5,6 @@ namespace Mingalevme\Utils;
 trait Contextable
 {
     /**
-     * @var array
-     */
-    protected $contextable;
-
-    /**
      * @param array[] $extras
      * @return string
      */
@@ -19,14 +14,14 @@ trait Contextable
     }
     
     /**
-     * @param array $extra
+     * @param array $extras
      * @return array
      */
     protected function getRawContext(...$extras)
     {
-        if ($this->contextable !== null) {
+        if (property_exists($this, 'contextable')) {
             $data = [];
-            foreach ($this->contextable as $property) {
+            foreach ($this->{'contextable'} as $property) {
                 $data[$property] = $this->{$property};
             }
         } else {
