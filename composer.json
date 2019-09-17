@@ -28,6 +28,6 @@
         "classmap": ["tests/"]
     },
     "suggest": {
-        "ext-libxml": "...",
+        "ext-libxml": "..."
     }
 }
