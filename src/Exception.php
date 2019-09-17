@@ -2,7 +2,7 @@
 
 namespace Mingalevme\Utils;
 
-class Exception extends \Exception
+class Exception extends \RuntimeException
 {
     
 }
