@@ -6,7 +6,7 @@ class Str
 {
     const LOWER = 'lower';
     const UPPER = 'upper';
-    
+
     /**
      * (PHP 4, PHP 5, PHP 7)<br/>
      * Find the position of the first occurrence of a substring (or first
@@ -38,13 +38,13 @@ class Str
                 return $index;
             }
         }
-        
+
         return false;
     }
-    
+
     /**
      * Alias of <strong>static::strpos</strong>
-     * 
+     *
      * @param string $haystack
      * @param mixed $needle string or array of strings
      * @param int $offset
@@ -54,11 +54,11 @@ class Str
     {
         return static::strpos($haystack, $needle, $offset);
     }
-    
+
     /**
      * Check if <strong>$haystack</strong> contains <strong>$needle</strong>
      * or one of <strong>$needle</strong> if $needle is an array
-     * 
+     *
      * @param string $haystack
      * @param mixed $needle string or array of strings
      * @param int $offset
@@ -68,10 +68,10 @@ class Str
     {
         return static::strpos($haystack, $needle, $offset) !== false;
     }
-    
+
     /**
      * Generate a safe random string
-     * 
+     *
      * @param int $length
      * @return string
      * @throws \Exception if it was not possible to gather sufficient entropy.
@@ -87,15 +87,15 @@ class Str
         } else {
             $str = \str_shuffle(\substr(\str_repeat(\md5(\mt_rand()), 2 + $length/32), 0, $length));
         }
-        
+
         return \strlen($str) > $length
             ? substr($str, 0, $length)
             : $str;
     }
-    
+
     /**
      * Transform string from camelCase to snake_case
-     * 
+     *
      * @param string $str
      * @return string
      */
@@ -109,45 +109,45 @@ class Str
 
     /**
      * Transform string from snake_case to camelCase
-     * 
+     *
      * @param string $str
      * @return string
      */
     public static function camelize($str, $mode = self::LOWER)
     {
         $result = \str_replace(['-', '_'], '', \ucwords(\ucwords(strtolower($str)), '-_'));
-        
+
         return $mode === self::UPPER ? \ucfirst($result) : \lcfirst($result);
     }
-    
+
     public static function randomHumanized($length)
     {
         $conso = ["b","c","d","f","g","h","j","k","l","m","n","p","r","s","t","v","w","x","y","z"];
         $vocal = ["a","e","i","o","u"];
-        
+
         srand((double) microtime() * 1000000);
-        
+
         $max = $length/2;
-        
+
         $password = '';
-        
-        for($i=1; $i <= $max; $i++) {
-          $password .= $conso[rand(0,19)];
-          $password .= $vocal[rand(0,4)];
+
+        for ($i=1; $i <= $max; $i++) {
+            $password .= $conso[rand(0,19)];
+            $password .= $vocal[rand(0,4)];
         }
-        
+
         return $password;
     }
-    
+
     public static function explode($delimiter, $string, $limit = null)
     {
         return array_map('trim', $limit !== null ? explode($delimiter, $string, $limit) : explode($delimiter, $string));
     }
-    
+
     public static function clean($str)
     {
         $str = iconv("UTF-8", "UTF-8//IGNORE", $str); // drop all non utf-8 characters
-        /**
+        /*
          * &nbsp; ( ): 194.160
          * &brvbar; (¦): 194.166
          * &copy; (©): 194.169
@@ -158,6 +158,7 @@ class Str
          * &para; (¶): 194.182
          * &middot; (·): 194.183
          * &raquo; (»): 194.187
+         * &ensp; ( ): 226.128.130
          * &ndash; (–): 226.128.147
          * &mdash; (—): 226.128.148
          * &lsquo; (‘): 226.128.152
@@ -175,13 +176,18 @@ class Str
          * &euro; (€): 226.130.172
          * &trade; (™): 226.132.162
          *
-         * [\x00-\x1F] -> 00-31
-         * \xC2[\x80-\x9F] -> 194.[128-159]
-         * \xE2[\x80-\x8F]{2} -> 226.[128-143].[128-143]
-         * \xE2\x80[\xA8-\xA9] -> 226.128.[168-169]
-         * \xE2\x81[\x9F-\xAF] -> 226.129.[159-175]
+         * To remove:
+         * 00-31                -> [\x00-\x1F]
+         * 194.[128-159]        -> \xC2[\x80-\x9F]
+         * 226.128.[168-169]    -> \xE2\x80[\xA8-\xA9]
+         * 226.130.[149-159]    -> \xE2\x82[\x05-\x9F]
+         * 226.131.[128-143]    -> \xE2\x83[\x80-\x8F]
+         * 226.131.[177-191]    -> \xE2\x83[\xB1-\xBF]
+         * 226.129.[159-175]    -> \xE2\x81[\x9F-\xAF]
+         * 226.144.[167-191]    -> \xE2\x90[\xA7-\xBF]
+         *
          */
-        $str = preg_replace('/(?>[\x00-\x1F]|\xC2[\x80-\x9F]|\xE2[\x80-\x8F]{2}|\xE2\x80[\xA8-\xA9]|\xE2\x81[\x9F-\xAF])/', '', $str);
+        $str = preg_replace('/(?>[\x00-\x1F]|\xC2[\x80-\x9F]|\xE2\x80[\xA8-\xA9]|\xE2\x82[\x05-\x9F]|\xE2\x83[\x80-\x8F]|\xE2\x83[\xB1-\xBF]|\xE2\x81[\x9F-\xAF]|\xE2\x90[\xA7-\xBF])/', '', $str);
         $str = trim($str);
         return $str;
     }
