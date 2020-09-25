@@ -110,7 +110,7 @@ class Xml extends \SimpleXMLElement
     /**
      * Get element child as string
      *
-     * @param \SimpleXMLElement $child
+     * @param string|null $child
      * @return string
      */
     public function getValue($child = null)
