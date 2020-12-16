@@ -40,7 +40,7 @@ class Xml extends \SimpleXMLElement
      */
     public static function safeize($xml)
     {
-        return \preg_replace('/[^\x{0009}\x{000a}\x{000d}\x{0020}-\x{D7FF}\x{E000}-\x{FFFD}]+/u', ' ', $xml);
+        return \preg_replace('/[^\x{0009}\x{000a}\x{000d}\x{0020}-\x{D7FF}\x{E000}-\x{FFFD}\x{1D400}-\x{1D7FF}]+/u', ' ', $xml);
     }
 
     public function addChild($name, $value = null, $namespace = null, $CDATA = false)
