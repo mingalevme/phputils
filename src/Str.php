@@ -74,12 +74,15 @@ class Str
      *
      * @param int $length
      * @return string
-     * @throws \Exception if it was not possible to gather sufficient entropy.
      */
     public static function random($length)
     {
         if (function_exists('\random_bytes')) {
-            $str = \bin2hex(\random_bytes(($length & 1 ? $length + 1 : $length)/2));
+            try {
+                $str = \bin2hex(\random_bytes(($length & 1 ? $length + 1 : $length)/2));
+            } catch (\Exception $e) {
+                throw new \RuntimeException('Error while generating random string via random_bytes()', $e->getCode(), $e);
+            }
         } elseif (\function_exists('\openssl_random_pseudo_bytes')) {
             $str = \bin2hex(\openssl_random_pseudo_bytes(($length & 1 ? $length + 1 : $length)/2));
         } elseif (\function_exists('\mcrypt_create_iv')) {
