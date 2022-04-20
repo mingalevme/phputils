@@ -2,13 +2,16 @@
 
 namespace Mingalevme\Utils;
 
+use InvalidArgumentException;
+
 class Sql
 {
     /**
      * Convert PHP-array to SQL-array
      * https://stackoverflow.com/questions/5631387/php-array-to-postgres-array
-     * 
+     *
      * @param array $data
+     * @param callable|string|callable-string $escape
      * @return string
      */
     public static function toArray(array $data, $escape = 'pg_escape_string')
@@ -29,7 +32,7 @@ class Sql
             } elseif (is_string($element)) {
                 $result[] = "'" . $escape($element) . "'";
             } else {
-                throw new \InvalidArgumentException("Unsupported array item");
+                throw new InvalidArgumentException("Unsupported array item");
             }
         }
         

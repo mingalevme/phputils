@@ -6,20 +6,15 @@ use Mingalevme\Utils\Sql;
 
 class SqlTest extends TestCase
 {
-    public function testToArray()
+    public function testToArray(): void
     {
-        $this->assertSame("ARRAY['foo','bar']", Sql::toArray(['foo', 'bar']));
-        
+        $escaper = function ($str) {
+            return addslashes($str);
+        };
+        $this->assertSame("ARRAY['foo','bar']", Sql::toArray(['foo', 'bar'], $escaper));
         $this->assertSame("ARRAY[1,2]", Sql::toArray([1, 2]));
-        
         $this->assertSame("ARRAY[1,2]", Sql::toArray(['1', '2']));
-        
-        $this->assertSame("ARRAY['foo\\\"bar','bar\'foo']", Sql::toArray(['foo"bar', 'bar\'foo'], function($str){
-            return addslashes($str);
-        }));
-        
-        $this->assertSame("ARRAY[ARRAY['foo\\\"bar'],ARRAY['bar\'foo']]", Sql::toArray([['foo"bar'], ['bar\'foo']], function($str){
-            return addslashes($str);
-        }));
+        $this->assertSame("ARRAY['foo\\\"bar','bar\'foo']", Sql::toArray(['foo"bar', 'bar\'foo'], $escaper));
+        $this->assertSame("ARRAY[ARRAY['foo\\\"bar'],ARRAY['bar\'foo']]", Sql::toArray([['foo"bar'], ['bar\'foo']], $escaper));
     }
 }

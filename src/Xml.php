@@ -43,6 +43,7 @@ class Xml extends \SimpleXMLElement
         return \preg_replace('/[^\x{0009}\x{000a}\x{000d}\x{0020}-\x{D7FF}\x{E000}-\x{FFFD}\x{1D400}-\x{1D7FF}]+/u', ' ', $xml);
     }
 
+    #[\ReturnTypeWillChange]
     public function addChild($name, $value = null, $namespace = null, $CDATA = false)
     {
         if ($value && $CDATA) {
@@ -54,6 +55,7 @@ class Xml extends \SimpleXMLElement
         }
     }
 
+    #[\ReturnTypeWillChange]
     public function addAttribute($name, $value = null, $namespace = null)
     {
         parent::addAttribute($name, $value ? htmlspecialchars($value) : $value, $namespace);
@@ -127,7 +129,8 @@ class Xml extends \SimpleXMLElement
 
         return null;
     }
-    
+
+    #[\ReturnTypeWillChange]
     public function asXML($filename = null)
     {
         $xml = explode('?>', parent::asXML(), 2);

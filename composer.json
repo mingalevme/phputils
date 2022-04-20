@@ -16,7 +16,7 @@
         "psr/log": "^1.0"
     },
     "require-dev": {
-        "phpunit/phpunit": "~6.0"
+        "phpunit/phpunit": "^6.0|^7.0|^8.0|^9.0"
     },
     "autoload": {
         "psr-4": {
@@ -33,6 +33,7 @@
     },
     "suggest": {
         "ext-libxml": "Requires by Mingalevme\\Utils\\Xml",
-        "ext-simplexml": "Requires by Mingalevme\\Utils\\Xml"
+        "ext-simplexml": "Requires by Mingalevme\\Utils\\Xml",
+        "ext-dom": "Requires by Mingalevme\\Utils\\Xml"
     }
 }

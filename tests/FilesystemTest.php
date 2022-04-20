@@ -18,7 +18,7 @@ class FilesystemTest extends TestCase
 
     protected static $DR;
 
-    public static function setUpBeforeClass()
+    public static function setUpBeforeClass(): void
     {
         $DR = \DIRECTORY_SEPARATOR;
         self::$umask = umask(0);
@@ -96,7 +96,7 @@ class FilesystemTest extends TestCase
 
         Filesystem::unlink($filename);
 
-        $this->assertFileNotExists($filename);
+        $this->assertFileDoesNotExist($filename);
 
         $this->assertTrue(Filesystem::unlink($filename));
     }
@@ -115,7 +115,7 @@ class FilesystemTest extends TestCase
 
         Filesystem::unlink($filename);
 
-        $this->assertFileNotExists($filename);
+        $this->assertFileDoesNotExist($filename);
 
         $this->assertTrue(Filesystem::unlink($filename));
     }
@@ -173,7 +173,7 @@ class FilesystemTest extends TestCase
         return $total;
     }
 
-    public static function tearDownAfterClass()
+    public static function tearDownAfterClass(): void
     {
         Filesystem::rmdir(self::$fitDirIntoSizeDir);
         umask(self::$umask);
