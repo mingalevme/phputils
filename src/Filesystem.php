@@ -2,35 +2,35 @@
 
 namespace Mingalevme\Utils;
 
+use Psr\Log\LoggerInterface;
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
+use SplFileInfo;
+
 class Filesystem
 {
-    /**
-     *
-     * @var \Psr\Log\LoggerInterface
-     */
+    /** @var LoggerInterface */
     protected static $logger;
 
-    public static function setLogger(\Psr\Log\LoggerInterface $logger)
+    public static function setLogger(LoggerInterface $logger)
     {
         self::$logger = $logger;
     }
-    
+
     /**
      * Create directory recursively
-     * 
+     *
      * @param string $pathname
      * @param int $mode
      * @param resource $context
-     * @throws \ErrorException
      * @return bool <b>true</b> on success or raise \ErrorException on failure.
+     * @throws \ErrorException
      */
     public static function mkdir($pathname, $mode = 0777, $context = null)
     {
         if (file_exists($pathname)) {
             return true;
         }
-
-        $result = null;
 
         ErrorHandler::set();
 
@@ -56,10 +56,10 @@ class Filesystem
 
         throw $e;
     }
-    
+
     /**
      * Remove directories and their contents recursively
-     * 
+     *
      * @param string $pathname
      * @return boolean
      * @throws \ErrorException
@@ -69,14 +69,16 @@ class Filesystem
         if (is_dir($pathname) === false) {
             return false;
         }
-        
+
         $files = array_diff(scandir($pathname), ['.', '..']);
-        
+
         foreach ($files as $file) {
-            $subpath = "${pathname}/${file}";
-            is_dir($subpath) ? static::rmdir($subpath) : static::unlink($subpath);
+            $subPath = "$pathname/$file";
+            is_dir($subPath)
+                ? static::rmdir($subPath)
+                : static::unlink($subPath);
         }
-        
+
         return rmdir($pathname);
     }
 
@@ -90,8 +92,6 @@ class Filesystem
      */
     public static function unlink($pathname, $context = null)
     {
-        $result = null;
-
         ErrorHandler::set();
 
         try {
@@ -116,10 +116,10 @@ class Filesystem
 
         throw $e;
     }
-    
+
     /**
      * Recursively changes file mode
-     * 
+     *
      * @param string $filename Path to the file or directory
      * @param int $mode <p>
      * Note that <i>mode</i> is not automatically
@@ -131,63 +131,63 @@ class Filesystem
      */
     public static function chmod($filename, $mode)
     {
-        $files = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($filename));
-        
+        $files = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($filename));
+
         foreach ($files as $file) {
-            /* @var $file \SplFileInfo */
+            /* @var $file SplFileInfo */
             if ($file->getFilename() !== '..') {
                 \chmod(\realpath($file->getPathname()), $mode);
             }
         }
-        
+
         return true;
     }
-    
+
     /**
      * Recursively changes file owner
-     * 
+     *
      * @param string $filename Path to the file or directory
      * @param int|string $user A user name or number.
      * @return bool
      */
     public static function chown($filename, $user)
     {
-        $files = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($filename));
-        
+        $files = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($filename));
+
         foreach ($files as $file) {
-            /* @var $file \SplFileInfo */
+            /* @var $file SplFileInfo */
             if ($file->getFilename() !== '..') {
                 \chown(\realpath($file->getPathname()), $user);
             }
         }
-        
+
         return true;
     }
-    
+
     /**
      * Recursively changes file owner
-     * 
+     *
      * @param string $filename Path to the file or directory
      * @param int|string $group A user name or number.
      * @return bool
      */
-    public static function chgrp($filename, $group )
+    public static function chgrp($filename, $group)
     {
-        $files = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($filename));
-        
+        $files = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($filename));
+
         foreach ($files as $file) {
-            /* @var $file \SplFileInfo */
+            /* @var $file SplFileInfo */
             if ($file->getFilename() !== '..') {
                 \chgrp(\realpath($file->getPathname()), $group);
             }
         }
-        
+
         return true;
     }
 
     /**
      * Gets full directory size
-     * 
+     *
      * @param string $dirname
      * @return int
      * @throws \Exception
@@ -197,14 +197,18 @@ class Filesystem
         if (is_dir($dirname) === false) {
             throw new \Exception("{$dirname} is not a directory");
         }
-        
+
         $size = 0;
-        
-        foreach (new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($dirname, \RecursiveDirectoryIterator::SKIP_DOTS)) as $file) {
-            /* @var $file \SplFileInfo */
+
+        foreach (
+            new RecursiveIteratorIterator(
+                new RecursiveDirectoryIterator($dirname, RecursiveDirectoryIterator::SKIP_DOTS)
+            ) as $file
+        ) {
+            /* @var $file SplFileInfo */
             $size += $file->getSize();
         }
-        
-        return $size; 
+
+        return $size;
     }
 }
