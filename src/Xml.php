@@ -65,21 +65,20 @@ class Xml extends \SimpleXMLElement
      * Safely get element attribute value
      * 
      * @param string $attr Attribute name
-     * @param string $default Default value if element or attribute doesn't exist
-     * @return string
+     * @return string|null
      */
-    public function getAttr($attr, $default=null)
+    public function getAttr($attr)
     {
-        if (isset($this) === false) {
-            return $default;
+        if (!isset($this)) {
+            return null;
         }
         
         try {
-            if (isset($this->attributes()->{$attr}) === false) {
-                return $default;
+            if (!isset($this->attributes()->{$attr})) {
+                return null;
             }
         } catch (\ErrorException $e) {
-            return $default;
+            return null;
         }
 
         return trim((string) $this->attributes()->{$attr});
