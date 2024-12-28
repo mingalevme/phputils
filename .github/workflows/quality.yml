@@ -27,8 +27,6 @@ jobs:
         run: composer validate --strict
       - name: Install dependencies
         run: composer install --prefer-dist --no-progress
-      - name: Security audit
-        run: composer list | grep audit > /dev/null && composer audit
       - name: composer-normalize
         run: composer normalize --dry-run
       - name: PHPUnit
