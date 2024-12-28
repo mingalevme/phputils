@@ -23,9 +23,9 @@
         "ext-dom": "*",
         "ext-libxml": "*",
         "ext-simplexml": "*",
-        "ergebnis/composer-normalize": "^2.45",
-        "phpunit/phpunit": "^6.0 || ^7.0 || ^8.0 || ^9.0 || ^10.0",
-        "friendsofphp/php-cs-fixer": "^3.65"
+        "ergebnis/composer-normalize": "*",
+        "friendsofphp/php-cs-fixer": "*",
+        "phpunit/phpunit": "^6.0 || ^7.0 || ^8.0 || ^9.0 || ^10.0"
     },
     "suggest": {
         "ext-dom": "Requires by Mingalevme\\Utils\\Xml",
