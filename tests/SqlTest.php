@@ -1,10 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Mingalevme\Tests\Utils;
 
 use Mingalevme\Utils\Sql;
 
-class SqlTest extends TestCase
+final class SqlTest extends TestCase
 {
     public function testToArray(): void
     {

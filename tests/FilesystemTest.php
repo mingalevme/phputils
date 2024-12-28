@@ -1,17 +1,19 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Mingalevme\Tests\Utils;
 
 use Mingalevme\Utils\Str;
 use Mingalevme\Utils\Filesystem;
  
-class FilesystemTest extends TestCase
+final class FilesystemTest extends TestCase
 {
-    const FIT_DIR_INTO_SIZE_MIN_FILESIZE = 10240;
-    const FIT_DIR_INTO_SIZE_MIN_MAX_FILESIZE = 102400;
+    public const FIT_DIR_INTO_SIZE_MIN_FILESIZE = 10240;
+    public const FIT_DIR_INTO_SIZE_MIN_MAX_FILESIZE = 102400;
 
-    const FIT_DIR_INTO_SIZE_MIN_MIN_FILES_COUNT = 10;
-    const FIT_DIR_INTO_SIZE_MIN_MAX_FILES_COUNT = 30;
+    public const FIT_DIR_INTO_SIZE_MIN_MIN_FILES_COUNT = 10;
+    public const FIT_DIR_INTO_SIZE_MIN_MAX_FILES_COUNT = 30;
 
     protected static $umask;
     protected static $fitDirIntoSizeDir;
@@ -29,7 +31,7 @@ class FilesystemTest extends TestCase
     /**
      * @dataProvider mkdirAndRmdirDataProvider
      */
-    public function testMkdirAndRmdir($dirs)
+    public function testMkdirAndRmdir($dirs): void
     {
         $DR = \DIRECTORY_SEPARATOR;
 
@@ -46,7 +48,7 @@ class FilesystemTest extends TestCase
         $this->assertFalse(is_dir(sys_get_temp_dir() . $DR . $dirs[0]), 'Directory has not been deleted: ' . sys_get_temp_dir() . $DR . $dirs[0]);
     }
 
-    public function mkdirAndRmdirDataProvider()
+    public static function mkdirAndRmdirDataProvider(): array
     {
         return [
             [
@@ -60,7 +62,7 @@ class FilesystemTest extends TestCase
         ];
     }
 
-    public function testMkdirOnExistingDirWithoutErrorException()
+    public function testMkdirOnExistingDirWithoutErrorException(): void
     {
         $dirname = implode(\DIRECTORY_SEPARATOR, [sys_get_temp_dir(), '_mingalevme-utils', 'existing-dir']);
 
@@ -71,7 +73,7 @@ class FilesystemTest extends TestCase
         $this->assertTrue(Filesystem::mkdir($dirname));
     }
 
-    public function testMkdirOnExistingDirWithErrorException()
+    public function testMkdirOnExistingDirWithErrorException(): void
     {
         set_error_handler(function($type, $message, $file, $line){
             var_dump(func_get_args());
@@ -86,7 +88,7 @@ class FilesystemTest extends TestCase
         $this->assertTrue(Filesystem::mkdir($dirname));
     }
 
-    public function testUnlinkWithoutErrorException()
+    public function testUnlinkWithoutErrorException(): void
     {
         $filename = sys_get_temp_dir() . '/_mingalevme-test';
 
@@ -101,7 +103,7 @@ class FilesystemTest extends TestCase
         $this->assertTrue(Filesystem::unlink($filename));
     }
 
-    public function testUnlinkWithErrorException()
+    public function testUnlinkWithErrorException(): void
     {
         set_error_handler(function($type, $message, $file, $line){
             var_dump(func_get_args());
@@ -120,10 +122,10 @@ class FilesystemTest extends TestCase
         $this->assertTrue(Filesystem::unlink($filename));
     }
 
-    public function testDirsize()
+    public function testDirsize(): void
     {
         Filesystem::rmdir(self::$fitDirIntoSizeDir);
-        $expected = $this->fillup();
+        $expected = $this->fillUp();
         $actual = Filesystem::dirsize(self::$fitDirIntoSizeDir);
         $this->assertEquals($expected, $actual);
     }
@@ -138,14 +140,14 @@ class FilesystemTest extends TestCase
         $this->assertLessThanOrEqual($expected, $actual);
     }*/
 
-    public function testChmod()
+    public function testChmod(): void
     {
-        $this->fillup();
+        $this->fillUp();
         Filesystem::chmod(self::$fitDirIntoSizeDir, 0777);
         $this->addToAssertionCount(1);
     }
 
-    protected function fillup()
+    private function fillUp(): int
     {
         $DR = \DIRECTORY_SEPARATOR;
 

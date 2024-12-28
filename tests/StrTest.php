@@ -1,10 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Mingalevme\Tests\Utils;
 
 use Mingalevme\Utils\Str as S;
 
-class StrTest extends TestCase
+final class StrTest extends TestCase
 {
     /**
      * @dataProvider snakeizeDataProvider
@@ -12,12 +14,12 @@ class StrTest extends TestCase
      * @param string $str
      * @param string $mode LOWER|UPPER
      */
-    public function testSnakeize($expected, $str, $mode)
+    public function testSnakeize($expected, $str, $mode): void
     {
         $this->assertSame($expected, S::snakeize($str, $mode));
     }
     
-    public function snakeizeDataProvider()
+    public static function snakeizeDataProvider(): array
     {
         return [
             [
@@ -147,12 +149,12 @@ class StrTest extends TestCase
      * @dataProvider camelizeDataProvider
      * @param string $str
      */
-    public function _testCamelize($expected, $str, $mode)
+    public function testCamelize($expected, $str, $mode): void
     {
         $this->assertSame($expected, S::camelize($str, $mode));
     }
     
-    public function camelizeDataProvider()
+    public static function camelizeDataProvider(): array
     {
         return [
             [

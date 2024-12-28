@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Mingalevme\Tests\Utils;
 
 use Mingalevme\Utils\Json as J;
@@ -8,12 +10,12 @@ use Mingalevme\Utils\Json\Exception\ParseException;
 /**
  * http://blog.nikolaposa.in.rs/2017/02/13/testing-conventions/
  */
-class JsonTest extends TestCase
+final class JsonTest extends TestCase
 {
     /**
      * @test
      */
-    public function it_decodes_valid_json()
+    public function it_decodes_valid_json(): void
     {
         $this->assertEquals([
             'foo1' => 'bar1',
@@ -24,7 +26,7 @@ class JsonTest extends TestCase
     /**
      * @test
      */
-    public function it_cannot_be_decoded_if_json_has_invalid_syntax()
+    public function it_cannot_be_decoded_if_json_has_invalid_syntax(): void
     {
         try {
             J::d('Invalid-json-string');
@@ -37,7 +39,7 @@ class JsonTest extends TestCase
     /**
      * @test
      */
-    public function it_cannot_be_decoded_if_json_has_state_mismatch()
+    public function it_cannot_be_decoded_if_json_has_state_mismatch(): void
     {
         try {
             J::d('{"foo": {]');
@@ -50,7 +52,7 @@ class JsonTest extends TestCase
     /**
      * @test
      */
-    public function it_cannot_be_decoded_if_json_has_malformed_utf8_characters()
+    public function it_cannot_be_decoded_if_json_has_malformed_utf8_characters(): void
     {
         $str = \iconv('UTF8', 'CP1251', 'Тест');
         

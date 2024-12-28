@@ -1,12 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Mingalevme\Tests\Utils;
 
 use Mingalevme\Utils\Http;
 
-class HttpTest extends TestCase
+final class HttpTest extends TestCase
 {
-    public function testParseHeadser()
+    public function testParseHeaders(): void
     {
         $string = "HTTP/1.1 401 Unauthorized\r\nServer: nginx/1.10.3\r\nDate: Thu, 27 Apr 2017 08:48:51 GMT\r\nContent-Type: text/html\r\nWWW-Authenticate: Basic realm=\"Forbidden\"\r\n\r\n";
         $headers = Http::parseHeaders($string, $statusCode, $statusLine);

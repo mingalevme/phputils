@@ -2,7 +2,7 @@
 
 namespace Mingalevme\Utils;
 
-class Domain
+class DomainName
 {
     public static function reverse($domain)
     {

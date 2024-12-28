@@ -6,7 +6,7 @@ namespace Mingalevme\Tests\Utils;
 
 use Mingalevme\Utils\Xml;
 
-class XmlTest extends TestCase
+final class XmlTest extends TestCase
 {
     public function test(): void
     {
