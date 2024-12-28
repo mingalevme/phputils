@@ -98,7 +98,7 @@ final class FilesystemTest extends TestCase
 
         Filesystem::unlink($filename);
 
-        $this->assertFileDoesNotExist($filename);
+        $this->appAssertFileDoesNotExist($filename);
 
         $this->assertTrue(Filesystem::unlink($filename));
     }
@@ -117,7 +117,7 @@ final class FilesystemTest extends TestCase
 
         Filesystem::unlink($filename);
 
-        $this->assertFileDoesNotExist($filename);
+        $this->appAssertFileDoesNotExist($filename);
 
         $this->assertTrue(Filesystem::unlink($filename));
     }
@@ -179,5 +179,10 @@ final class FilesystemTest extends TestCase
     {
         Filesystem::rmdir(self::$fitDirIntoSizeDir);
         umask(self::$umask);
+    }
+
+    private function appAssertFileDoesNotExist(string $filename): void
+    {
+        self::assertFalse(file_exists($filename), "file \"$filename\" exists");
     }
 }
