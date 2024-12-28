@@ -22,7 +22,7 @@ jobs:
           # All extensions depending on the specified extension will also be disabled.
           extensions: mbstring, intl, :opcache
           coverage: xdebug
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Validate composer.json
         run: composer validate --strict
       - name: Install dependencies
