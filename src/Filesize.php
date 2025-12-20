@@ -7,10 +7,8 @@ use InvalidArgumentException;
 class Filesize
 {
     const UNIT_PREFIXES_POWERS = [
-        'B' => 0,
         '' => 0,
         'K' => 1,
-        'k' => 1,
         'M' => 2,
         'G' => 3,
         'T' => 4,
@@ -45,7 +43,7 @@ class Filesize
         if ($power > $limit) {
             $power = $limit;
         }
-        $prefix = strtoupper(array_flip(self::UNIT_PREFIXES_POWERS)[$power]);
+        $prefix = array_flip(self::UNIT_PREFIXES_POWERS)[$power];
         $multiple = $useBinaryPrefix
             ? "{$prefix}iB"
             : "{$prefix}B";
@@ -64,22 +62,27 @@ class Filesize
      */
     public static function dehumanize(string $size)
     {
-        if (preg_match('/\d+\.\d+B/', $size)) {
-            throw new Exception("Invalid size format or unknown/unsupported units");
+        // 1.0B
+        if (preg_match('/^\d+\.\d+B$/', $size)) {
+            throw new Exception("Invalid size format or unknown/unsupported units: $size");
         }
 
-        if (preg_match('/\d+kiB/', $size)) {
-            throw new Exception("Invalid size format or unknown/unsupported units");
+        $unitsUpper = implode('', array_keys(self::UNIT_PREFIXES_POWERS));
+        $unitsLower = strtolower($unitsUpper);
+
+        // 1kiB, 1.0kiB, 1miB, 1.0miB ...
+        if (preg_match("/^\d+(\.d+)?[$unitsLower]iB/", $size)) {
+            throw new Exception("Invalid size format or unknown/unsupported units: $size");
         }
 
-        $supportedUnits = implode('', array_keys(self::UNIT_PREFIXES_POWERS));
-        $regexp = "/^(\d+(?:\.\d+)?)(([$supportedUnits])((?<!B)(B|iB))?)?$/";
+        $units = "$unitsUpper$unitsLower";
+        $regexp = "/^(\d+(?:\.\d+)?)(([$units])?((?<!B)(B|iB))?)?$/";
 
         if ((bool)preg_match($regexp, $size, $matches) === false) {
-            throw new Exception("Invalid size format or unknown/unsupported units");
+            throw new Exception("Invalid size format or unknown/unsupported units: $size");
         }
 
-        $prefix = $matches[3] ?? 'B';
+        $prefix = strtoupper($matches[3] ?? '');
 
         $base = ($matches[4] ?? '') === 'iB'
             ? 1024
@@ -87,8 +90,8 @@ class Filesize
 
         if (strpos($matches[1], '.') !== false) {
             return intval(floatval($matches[1]) * pow($base, self::UNIT_PREFIXES_POWERS[$prefix]));
-        } else {
-            return intval($matches[1]) * pow($base, self::UNIT_PREFIXES_POWERS[$prefix]);
         }
+
+        return intval($matches[1]) * pow($base, self::UNIT_PREFIXES_POWERS[$prefix]);
     }
 }
