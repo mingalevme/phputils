@@ -2,6 +2,8 @@
 
 namespace Mingalevme\Utils;
 
+use InvalidArgumentException;
+
 class Filesize
 {
     const UNIT_PREFIXES_POWERS = [
@@ -21,23 +23,37 @@ class Filesize
     /**
      * Convert size in bytes to human-readable filesize (IEC)
      *
-     * @param int|float $size Size in bytes
-     * @param int|float $precision The optional number of decimal digits to round to, default is <b>2</b>
+     * @param int<0, max>|float $size Size in bytes
+     * @param int<0, max> $precision The optional number of decimal digits to round to, default is <b>2</b>
      * @param bool $useBinaryPrefix Use powers-of-two (1024) instead of powers-of-ten (1000), default is <b>false</b>
-     * @return string Human-readable size
+     * @return non-empty-string Human-readable size
      */
-    public static function humanize($size, $precision = 2, bool $useBinaryPrefix = false): string
+    public static function humanize($size, int $precision = 2, bool $useBinaryPrefix = false): string
     {
-        $base = $useBinaryPrefix ? 1024 : 1000;
+        if ($size < 0) {
+            throw new InvalidArgumentException('Invalid size');
+        }
+        $base = $useBinaryPrefix
+            ? 1024
+            : 1000;
+        /** @var int<1, max> $limit */
         $limit = array_values(self::UNIT_PREFIXES_POWERS)[count(self::UNIT_PREFIXES_POWERS) - 1];
-        $power = ($_ = floor(log($size, $base))) > $limit ? $limit : $_;
-        $prefix = array_flip(self::UNIT_PREFIXES_POWERS)[$power];
-        $multiple = ($useBinaryPrefix ? strtoupper($prefix) . 'iB' : $prefix . 'B');
+        /** @var int<0, max> $power */
+        $power = (intval($size) === 0)
+            ? 0
+            : intval(floor(log($size, $base)));
+        if ($power > $limit) {
+            $power = $limit;
+        }
+        $prefix = strtoupper(array_flip(self::UNIT_PREFIXES_POWERS)[$power]);
+        $multiple = $useBinaryPrefix
+            ? "{$prefix}iB"
+            : "{$prefix}B";
         return round($size / pow($base, $power), $precision) . $multiple;
     }
 
     /**
-     * Convert human readble filesize (IEC) to size in bytes
+     * Convert human-readable filesize (IEC) to size in bytes
      *
      * https://en.wikipedia.org/wiki/Metric_prefix
      * https://en.wikipedia.org/wiki/Binary_prefix
@@ -57,7 +73,7 @@ class Filesize
         }
 
         $supportedUnits = implode('', array_keys(self::UNIT_PREFIXES_POWERS));
-        $regexp = "/^(\d+(?:\.\d+)?)(([{$supportedUnits}])((?<!B)(B|iB))?)?$/";
+        $regexp = "/^(\d+(?:\.\d+)?)(([$supportedUnits])((?<!B)(B|iB))?)?$/";
 
         if ((bool)preg_match($regexp, $size, $matches) === false) {
             throw new Exception("Invalid size format or unknown/unsupported units");
@@ -65,7 +81,7 @@ class Filesize
 
         $prefix = $matches[3] ?? 'B';
 
-        $base = isset($matches[4]) && $matches[4] === 'iB'
+        $base = ($matches[4] ?? '') === 'iB'
             ? 1024
             : 1000;
 

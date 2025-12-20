@@ -23,8 +23,10 @@ final class FilesizeTest extends TestCase
     public static function humanizeDataProvider(): array
     {
         return [
+            ['0B', 0, 2, false],
+            ['0iB', 0, 2, true],
             ['512B', 512, 2, false],
-            ['1kB', 1000, 2, false],
+            ['1KB', 1000, 2, false],
             ['2MB', 2 * pow(1000, 2), 2, false],
             ['20GB', 20 * pow(1000, 3), 2, false],
 
