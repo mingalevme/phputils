@@ -2,6 +2,7 @@
 
 namespace Mingalevme\Utils;
 
+use ErrorException;
 use Psr\Log\LoggerInterface;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
@@ -12,6 +13,10 @@ class Filesystem
     /** @var LoggerInterface */
     protected static $logger;
 
+    /**
+     * @return void
+     * @api
+     */
     public static function setLogger(LoggerInterface $logger)
     {
         self::$logger = $logger;
@@ -24,7 +29,7 @@ class Filesystem
      * @param int $mode
      * @param resource $context
      * @return bool <b>true</b> on success or raise \ErrorException on failure.
-     * @throws \ErrorException
+     * @throws ErrorException
      */
     public static function mkdir($pathname, $mode = 0777, $context = null)
     {
@@ -38,12 +43,12 @@ class Filesystem
             return $context
                 ? mkdir($pathname, $mode, true, $context)
                 : mkdir($pathname, $mode, true);
-        } catch (\ErrorException $e) {
-            // (!) restore_error_handler()
+        } catch (ErrorException $e) {
+        } finally {
+            ErrorHandler::reset();
         }
 
-        ErrorHandler::reset();
-
+        /** @var ErrorException $e */
         if (strpos(strtolower($e->getMessage()), 'file exists') !== false) {
             return true;
         }
@@ -62,7 +67,7 @@ class Filesystem
      *
      * @param string $pathname
      * @return boolean
-     * @throws \ErrorException
+     * @throws ErrorException
      */
     public static function rmdir($pathname)
     {
@@ -88,7 +93,7 @@ class Filesystem
      * @param string $pathname Path to the file
      * @param resource $context Context
      * @return bool Returns TRUE on success or raise \ErrorException on failure.
-     * @throws \ErrorException
+     * @throws ErrorException
      */
     public static function unlink($pathname, $context = null)
     {
@@ -98,12 +103,12 @@ class Filesystem
             return $context
                 ? unlink($pathname, $context)
                 : unlink($pathname);
-        } catch (\ErrorException $e) {
-            // (!) restore_error_handler()
+        } catch (ErrorException $e) {
+        } finally {
+            ErrorHandler::reset();
         }
 
-        ErrorHandler::reset();
-
+        /** @var ErrorException $e */
         if (strpos(strtolower($e->getMessage()), 'no such file or directory') !== false) {
             return true;
         }

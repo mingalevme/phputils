@@ -37,7 +37,7 @@ class Filesize
         /** @var int<1, max> $limit */
         $limit = array_values(self::UNIT_PREFIXES_POWERS)[count(self::UNIT_PREFIXES_POWERS) - 1];
         /** @var int<0, max> $power */
-        $power = (intval($size) === 0)
+        $power = $size < 1
             ? 0
             : intval(floor(log($size, $base)));
         if ($power > $limit) {

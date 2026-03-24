@@ -128,7 +128,7 @@ class Str
         $conso = ["b","c","d","f","g","h","j","k","l","m","n","p","r","s","t","v","w","x","y","z"];
         $vocal = ["a","e","i","o","u"];
 
-        srand((double) microtime() * 1000000);
+        srand((float) microtime() * 1000000);
 
         $max = $length/2;
 
